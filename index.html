@@ -1,1 +1,68 @@
-Hello World
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>
+		virvel
+	</title>
+	<script type="text/javascript">
+	var ctx;
+	var duk;
+	var i = 0;
+	var c = 100;
+	var inc = Math.PI/30;
+	var phs = Math.random()*3;
+
+		window.onload = function() {
+
+			duk = document.getElementById("duk");
+  			ctx = duk.getContext("2d");
+
+	  		ctx.translate(200,200);
+			timer = setInterval(draw,30);
+			return timer;
+
+		}
+
+  		function draw() {
+	  		ctx.fillStyle = "rgba(28,29,33,0.4)";
+	  		ctx.fillRect(-200,-200,300,300);
+	  		ctx.beginPath();
+	  		ctx.lineTo(Math.cos((i-5*inc+0.5))*c/1.5,Math.sin(2*(i-5*inc))*c/2.5);
+	  		ctx.lineTo(Math.cos(i+0.5)*c/2.5,Math.sin(i-5*inc)*c/2.5);
+
+	  		i += inc;
+	  		ctx.lineWidth = 5;
+			ctx.strokeStyle = "#EEEFF7";
+			ctx.stroke();
+		
+
+			ctx.beginPath();
+	  		ctx.lineTo(Math.cos((i-5*inc))*c/1.5,Math.sin(i-5*inc)*c/1.5+20);
+	  		ctx.lineTo(Math.cos(i)*c/1.5,Math.sin(i)*c/1.5+20);
+
+	  		ctx.lineWidth = 5;
+			ctx.strokeStyle = "#92CDCF";
+			ctx.stroke();
+
+
+		}
+
+
+	</script>
+	<style>
+		body {
+			background-color: #1C1D21;
+			color: #ADD5F7;
+			font-family: Georgia;
+			font-size: 16pt;
+		}
+	</style>
+</head>
+
+<body>
+	
+	<canvas id="duk" width="500" height="500">
+
+	</canvas>
+</body>
+</html>
