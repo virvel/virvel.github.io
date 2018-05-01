@@ -4,7 +4,7 @@
 	<title>
 		virvel
 	</title>
-	<script type="text/javascript">
+	<!--<script type="text/javascript">
 	var ctx;
 	var duk;
 	var i = 0;
@@ -24,7 +24,7 @@
 		}
 
   		function draw() {
-	  		ctx.fillStyle = "rgba(28,29,33,0.4)";
+	  		ctx.fillStyle = "rgba(0,0,0,0.255)";
 	  		ctx.fillRect(-200,-200,300,300);
 	  		ctx.beginPath();
 	  		ctx.lineTo(Math.cos((i-5*inc+0.5))*c/1.5,Math.sin(2*(i-5*inc))*c/2.5);
@@ -48,21 +48,119 @@
 		}
 
 
-	</script>
+	</script>-->
 	<style>
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
 		body {
-			background-color: #1C1D21;
-			color: #ADD5F7;
+			background-color: rgb(10,23,31);
+			color: rgb(230,242,255);
+			font-family: 'Open Sans';
+			font-kerning: auto;
+		}
+
+		.left {
+			margin: 150px auto auto auto;
+			width: 15vw;
+			height: 100vh;
+			display: block;
+			float: left;
+			text-align: right;	
+		}
+
+		.left ul {
+			list-style: none;
+			padding: 20px;
+			font-weight: 100;
+			font-size: 24px;
+			letter-spacing: 1px;
+			border-right: 1px solid rgb(230,242,255);
+		}
+
+		.top {
+			display: block;
+			color: #000;
+			float: right;		
+			width: 80vw;
+			height: 150px;
+		}
+
+		.top .title {
+			font-family: 'Open Sans', Arial, sansserif;
+			font-size: 80px;
+			color: rgb(230,242,255);
+			border-bottom: 1px solid rgb(230,242,255);
+			font-kerning: auto;
+			letter-spacing: -1px;
+			font-weight: 900;
+		}
+
+		.right {
+			display: block;
+			margin: 0 auto;
+			float: right;		
+			width: 80vw;
+		}
+
+		.right p
+		{
 			font-family: Georgia;
-			font-size: 16pt;
+			padding: 25px;
+			max-width: 60ch;
+			text-align: justify;
+			font-weight: 100;
+			line-height: 1.25em;
+		}
+
+		.bottom {
+			display: block;
+			margin: 0 auto;
+			float: right;		
+			width: 80vw;
 		}
 	</style>
 </head>
 
 <body>
 	
-	<canvas id="duk" width="500" height="500">
+	<div class="left">
+		<ul>
+			<li>
+				test
+			</li>
+			<li>
+				test2
+			</li>
+			<li>
+				test3
+			</li>
+			<li>
+				test4
+			</li>
+		</ul>
+	</div>
+	<div class="top">
+		<span class="title">virvel</span>
+	</div>
+	<div class="right">
+		
 
-	</canvas>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porta eleifend gravida. Sed dapibus et nisi eget condimentum. Proin euismod sit amet velit quis rutrum. Curabitur rutrum, ipsum ac pretium venenatis, sapien nisi iaculis urna, a rutrum lectus nisi eget nisl. Nullam vel nulla non velit pellentesque volutpat et ut sem. Nullam id velit sodales, facilisis lectus eu, semper felis. Duis accumsan velit turpis, a hendrerit erat faucibus varius. Mauris ligula nibh, sagittis at ipsum vitae, ultrices molestie odio. Aenean non posuere justo. Nunc ac lorem in orci suscipit scelerisque. Proin a posuere turpis. Donec sed dui lectus. Vivamus ullamcorper ullamcorper diam in lobortis. Aliquam fermentum sapien vitae enim mollis, vel convallis nulla porttitor. Donec suscipit, eros sit amet blandit tempus, nunc ex faucibus odio, vel dapibus ligula mauris eget sapien. Fusce non laoreet neque, a auctor nisl.</p>
+
+<p>Proin bibendum dignissim dui, nec porttitor tellus consequat quis. Nam tempor congue erat, vitae consectetur erat gravida vel. Nullam risus urna, rutrum vitae semper ac, lacinia ut velit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus in odio id sapien viverra suscipit eget a ante. Vivamus tristique vel lectus in condimentum. Sed consequat enim eu turpis faucibus, nec tempor odio fermentum. Pellentesque tincidunt bibendum mauris a efficitur.</p>
+
+<p>Nam vehicula lacus nec nisl luctus egestas. Fusce auctor, lorem vel auctor semper, magna turpis consequat felis, at mattis est lorem ac augue. Vestibulum elit velit, sollicitudin vitae tempor id, egestas in ante. In tristique bibendum nulla, ut vestibulum justo tincidunt vel. Nam scelerisque interdum tincidunt. Sed molestie, leo eget ultricies convallis, leo mi luctus ex, sit amet tempor nibh enim sed ante. Curabitur vitae risus vitae dui eleifend posuere nec eu arcu. Vivamus facilisis risus sed neque mollis vulputate. Cras ante orci, tincidunt sed urna sed, placerat vehicula ex.</p>
+
+<p>Nunc aliquam purus ut fermentum aliquet. Aenean nec lectus scelerisque, vestibulum odio ac, euismod risus. Integer cursus nisi massa, nec faucibus sapien maximus quis. Vestibulum id viverra velit. Donec metus lorem, varius sit amet cursus dignissim, pretium eget nibh. Vestibulum a ante vitae urna aliquet commodo. Cras posuere cursus leo at tincidunt. Aenean sagittis justo sit amet tortor maximus, ornare fringilla ante volutpat. Nunc ac gravida augue, vitae vulputate lectus. Vivamus volutpat suscipit ligula eu convallis. Praesent at sem sed nisi tempor porta. Aenean dignissim neque nulla, vitae ornare massa vulputate pharetra. Fusce rhoncus erat odio, vulputate sodales massa dictum eget. Aliquam auctor mauris at purus ullamcorper semper. Suspendisse mi nisl, pretium sed cursus quis, aliquam veli lectus.</p>
+
+<p>Cras at scelerisque ex. Etiam lorem ligula, ornare et ullamcorper eu, rhoncus id tellus. In hac habitasse platea dictumst. In vulputate dolor eros, in pellentesque elit cursus id. Quisque aliquet quam ac viverra ullamcorper. Quisque eget fermentum dolor. Morbi id dui dolor. Suspendisse tempus tincidunt purus eget suscipit. Proin vel semper risus.</p>
+	</div>
+	<div class="bottom">
+		hdfh
+	</div>
 </body>
 </html>
