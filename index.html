@@ -1,57 +1,161 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+	<meta charset="utf-8">
 	<title>
 		virvel
 	</title>
 	<script type="text/javascript">
-	var ctx;
-	var duk;
-	var i = 0;
-	var c = 100;
-	var inc = Math.PI/30;
-	var phs = Math.random()*3;
+		
+		var ctx;
+		var m = 0;
+		var c = 100;
+		var inc = Math.PI/30;
+		var max_x = 500;
+		var max_y = 500;
+		var buffer_size = 128;
+		var sample_rate = 4200;
+		var left_buffer = Array(buffer_size);
+		var right_buffer = Array(buffer_size);
+		var np = 1000;
+		var pointBuffer = Array(buffer_size * np);
+
+		function toPoint(xx,yy) {
+			return {x: xx, y: yy};
+		}
+
+		function mul(a, p) {
+			return {x: a * p.x, y: a * p.y};
+		}
+
+		function add(a,p) {
+			return {x: a.x + p.x, y: a.y + p.y};
+		}
+
+		function catmull_rom_spline(P0, P1, P2, P3, nPoints)
+		{
+			var t0 = 0;
+			var t1 = 1;
+			var t2 = 2;
+			var t3 = 3;
+
+			var t = Array(nPoints);
+			var A1 = Array(nPoints);
+			var A2 = Array(nPoints);
+			var A3 = Array(nPoints);
+			var B1 = Array(nPoints);
+			var B2 = Array(nPoints);
+			var C = Array(nPoints);
+
+			var i = 0;
+
+			for (var te = t1; te <= t2; te += (t2 - t1)/nPoints)
+			{
+				t[i++] = te;
+			}
+
+			for (var i = 0; i < nPoints; ++i)
+			{
+				A1[i] = add(mul((t1 - t[i])/(t1 - t0), P0),    mul((t[i] - t0)/(t1 - t0), P1));
+				A2[i] = add(mul((t2 - t[i])/(t2 - t1), P1),    mul((t[i] - t1)/(t2 - t1), P2));
+				A3[i] = add(mul((t3 - t[i])/(t3 - t2), P2),    mul((t[i] - t2)/(t3 - t2), P3));
+				B1[i] = add(mul((t2 - t[i])/(t2 - t0), A1[i]), mul((t[i] - t0)/(t2 - t0), A2[i]));
+				B2[i] = add(mul((t3 - t[i])/(t3 - t1), A2[i]), mul((t[i] - t1)/(t3 - t1), A3[i]));
+				C[i]  = add(mul((t2 - t[i])/(t2 - t1), B1[i]), mul((t[i] - t1)/(t2 - t1), B2[i]));
+			}
+
+			return C;
+		}
+
+		function catmull_rom_chain(p) {
+
+			if (p) {
+
+				var numPoints = p.length;
+
+				var C = Array();
+				var newpts;
+				for (var i = 0; i < numPoints-3; ++i)
+				{
+					newpts = catmull_rom_spline(p[i], p[i+1], p[i+2], p[i+3], 10);
+					C = C.concat(newpts);
+				}
+
+				return C;
+			}
+
+			else {
+				console.log('Inga punkter eller?');
+			}
+
+		}
 
 		window.onload = function() {
-
-			duk = document.getElementById("duk");
+			var duk = document.getElementById("duk");
   			ctx = duk.getContext("2d");
 
-	  		ctx.translate(100,100);
-			timer = setInterval(draw,30);
+			var timer = setInterval(draw, 30);
+
 			return timer;
 
 		}
 
-  		function draw() {
-	  		ctx.fillStyle = "rgba(28,29,33,0.4)";
-	  		ctx.fillRect(-200,-200,300,300);
+
+		function topath()
+		{
+			for (var i = 0; i < buffer_size; ++i)
+			{
+				left_buffer[i] = Math.cos(2*Math.PI*71*i/sample_rate+m);
+				right_buffer[i] = Math.cos(2*Math.PI*91*i/sample_rate+m);
+			}
+			m += 1%buffer_size;
+		}
+
+		function toPoints(X,Y) {
+
+			var pts = Array();
+			for (var i = 0; i < buffer_size+2; ++i) {
+				pts = pts.concat(toPoint(left_buffer[i%buffer_size],right_buffer[i%buffer_size]));
+			}
+			return pts;
+		}
+
+
+  		function draw()
+  		{
+
+	  		topath();
+	  		var point_buffer = catmull_rom_chain(toPoints(left_buffer, right_buffer));
 	  		ctx.beginPath();
-	  		ctx.lineTo(Math.cos((i-5*inc+0.5))*c/1.5,Math.sin(2*(i-5*inc))*c/2.5);
-	  		ctx.lineTo(Math.cos(i+0.5)*c/2.5,Math.sin(i-5*inc)*c/2.5);
-
-	  		i += inc;
-	  		ctx.lineWidth = 5;
-			ctx.strokeStyle = "#EEEFF7";
+	  		var point_buffer_length = point_buffer.length;
+			for (var i = 0; i < point_buffer_length; ++i) {
+				ctx.lineTo(point_buffer[i].x*c+c, point_buffer[i].y*c+c);
+			}
+			
+			/*for (var i = 0; i < buffer_size; ++i) {
+				ctx.lineTo(left_buffer[i]*c+c, right_buffer[i]*c+c);
+			}*/
+			ctx.closePath();
+			ctx.fillStyle = "rgba(10,20,0,0.7)";
+			ctx.shadowColor = 'rgba(10,20,0,0)';
+		    ctx.shadowBlur = 25;
+	      	ctx.shadowOffsetX = 0;
+	      	ctx.shadowOffsetY = 0;
+	  		ctx.fillRect(-200,-200,1000,800);
+	  		ctx.lineWidth = "2";
+	  		ctx.shadowColor = 'rgba(100,255,100,1)';
+		    ctx.shadowBlur = 10;
+	      	ctx.shadowOffsetX = 0;
+	      	ctx.shadowOffsetY = 0;
+			ctx.strokeStyle = "rgba(100,255,100,0.7)";
 			ctx.stroke();
-		
-
-			ctx.beginPath();
-	  		ctx.lineTo(Math.cos((i-5*inc))*c/1.5,Math.sin(i-5*inc)*c/1.5+20);
-	  		ctx.lineTo(Math.cos(i)*c/1.5,Math.sin(i)*c/1.5+20);
-
-	  		ctx.lineWidth = 5;
-			ctx.strokeStyle = "#92CDCF";
-			ctx.stroke();
-
-
 		}
 
 
 	</script>
 	<style>
 		body {
-			background-color: #1C1D21;
+			background-color: rgba(10,20,0,1);
 			color: #ADD5F7;
 			font-family: Georgia;
 			font-size: 16pt;
@@ -61,7 +165,7 @@
 
 <body>
 	
-	<canvas id="duk" width="500" height="500">
+	<canvas id="duk" width="1000" height="800">
 
 	</canvas>
 </body>
