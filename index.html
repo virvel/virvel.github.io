@@ -6,6 +6,8 @@
 		virvel
 	</title>
 	<script type="text/javascript">
+
+		window.addEventListener("deviceorientation", handleOrientation, true);
 		
 		var ctx;
 		var m = 0;
@@ -27,6 +29,16 @@
 		var phase1 = 0;
 		var phase2 = 0;
 
+	
+		function handleOrientation(event) {
+			var abs = event.absolute;
+			var alpha = event.alpha;
+			var beta = event.beta;
+			var gamma = event.gamma;
+
+			frequency1 = alpha;
+			frequency2 = beta;
+		}
 
 		for (var i = 0; i < lookuptable_size; ++i) {
 			sintable[i] = Math.sin(2*Math.PI*i/lookuptable_size);
@@ -128,11 +140,10 @@
 				phase1 = parseInt((phase1 + inc1) % lookuptable_size);
 				phase2 = parseInt((phase2 + inc2) % lookuptable_size);
 			}
-			console.log(left_buffer);
 
 		}
 
-		function toPoints(X,Y) {
+		function toPoints() {
 
 			var pts = Array();
 			for (var i = 0; i < buffer_size+3; ++i) {
@@ -150,8 +161,7 @@
 	  		ctx.beginPath();
 	  		var interp = 1;
 	  		if (interp) {
-	  			point_buffer = catmull_rom_chain(toPoints(left_buffer,
-	  													  right_buffer));
+	  			point_buffer = catmull_rom_chain(toPoints());
 		  		var point_buffer_length = point_buffer.length;
 				for (var i = 0; i < point_buffer_length; ++i) {
 					ctx.lineTo(point_buffer[i].x*c+c, point_buffer[i].y*c+c);
