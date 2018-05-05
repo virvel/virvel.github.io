@@ -7,8 +7,7 @@
 	</title>
 	<script type="text/javascript">
 
-		window.addEventListener("deviceorientation", handleOrientation, true);
-		
+
 		var ctx;
 		var m = 0;
 		var c = 100;
@@ -36,8 +35,7 @@
 			var beta = event.beta;
 			var gamma = event.gamma;
 
-			frequency1 = alpha;
-			frequency2 = beta;
+
 		}
 
 		for (var i = 0; i < lookuptable_size; ++i) {
@@ -121,6 +119,7 @@
 		}
 
 		window.onload = function() {
+			window.addEventListener("deviceorientation", handleOrientation, true);
 			var duk = document.getElementById("duk");
   			ctx = duk.getContext("2d");
   			ctx.translate(100,100);
