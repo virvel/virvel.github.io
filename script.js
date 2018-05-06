@@ -8,19 +8,19 @@ var lookuptable_size = 512;
 var sample_rate = 44100;
 var num_channels = 2;
 
-var left_buffer = Array(buffer_size);
-var right_buffer = Array(buffer_size);
+var left_buffer = new Float32Array(buffer_size);
+var right_buffer = new Float32Array(buffer_size);
 var point_buffer;
 var audiobuffer;
 
-var sintable = Array(lookuptable_size);
+var sintable = new Float32Array(lookuptable_size);
 
 var frequency1;
 var frequency2;
 var inc1;
 var inc2;
 var phase1;
-var phase2
+var phase2;
 
 
 
@@ -63,9 +63,6 @@ function catmull_rom_spline(P0, P1, P2, P3, nPoints)
 	var B1 = Array(nPoints);
 	var B2 = Array(nPoints);
 	var C = Array(nPoints);
-
-	var i = 0;
-
 
 	for (var i = 0; i < nPoints; ++i)
 	{
@@ -113,8 +110,8 @@ function catmull_rom_chain(p) {
 
 function prepare() {
 
-	frequency1 = 5000;
-	frequency2 = 6000;
+	frequency1 = 20;
+	frequency2 = 84;
 	inc1 = frequency1 * buffer_size	/ sample_rate;
 	inc2 = frequency2 * buffer_size	/ sample_rate;
 	phase1 = 0;
@@ -123,6 +120,7 @@ function prepare() {
 	for (var i = 0; i < lookuptable_size; ++i) {
 		sintable[i] = Math.sin(2*Math.PI*i/lookuptable_size);
 	}
+
 }
 
 window.onload = function() {
@@ -131,13 +129,33 @@ window.onload = function() {
 
 	prepare();
 
-	var AudioContext = window.AudioContext || window.webkitAudioContext;
-	actx = new AudioContext();
-	audiobuffer = actx.createBuffer(num_channels, buffer_size, sample_rate);
-	source = actx.createBufferSource();
+	console.log(sintable);
+
+	var actx = new (window.AudioContext || window.webkitAudioContext)();
+	audiobuffer = actx.createBuffer(1, sample_rate*3, sample_rate);
+	for (var channel = 0; channel < audiobuffer.numberOfChannels; channel++) {
+	  var nowBuffering = audiobuffer.getChannelData(channel);
+	  for (var i = 0; i < audiobuffer.length; i++) {
+	    nowBuffering[i] = left_buffer[i%buffer_size];
+	  }
+	}
+
+	var source = actx.createBufferSource();
 	source.buffer = audiobuffer;
-	source.connect(actx.destination);
+	gainNode =  actx.createGain();
+	gainNode.connect(actx.destination);
+	source.connect(gainNode);
 	source.start();
+	// var AudioContext = window.AudioContext || window.webkitAudioContext;
+	// actx = new AudioContext();
+	// audiobuffer = actx.createBuffer(num_channels, buffer_size, sample_rate);
+	// var source = actx.createBufferSource();
+	// source.buffer = audiobuffer;
+	// source.connect(actx.destination);
+	// source.start();
+
+	topath();
+
 
 	var duk = document.getElementById("duk");
 	ctx = duk.getContext("2d");
@@ -152,17 +170,14 @@ window.onload = function() {
 function topath()
 {
 
-		var left_audiobuffer = audiobuffer.getChannelData(0);
-		var right_audiobuffer = audiobuffer.getChannelData(1);
 		for (var i = 0; i < buffer_size; ++i)
 		{
 			left_buffer[i] = sintable[phase1];
-			left_audiobuffer[i] = sintable[phase1];
 			right_buffer[i] = sintable[phase2];
-			left_audiobuffer[i] = sintable[phase2];
 			phase1 = parseInt((phase1 + inc1) % lookuptable_size);
 			phase2 = parseInt((phase2 + inc2) % lookuptable_size);
 		}
+
 }
 
 function toPoints() {
