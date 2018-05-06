@@ -25,8 +25,8 @@ function handleOrientation(event) {
 	var beta = event.beta;			// [-180,180]
 	var gamma = event.gamma;		// [-90, 90]
 
-	frequency1 = alpha;
-	frequency2 = beta;
+	frequency1 = 10000/(alpha+1)+100;
+	frequency2 = 10000/(beta+181)+100;
 	inc1 = frequency1 * buffer_size	/ sample_rate;
 	inc2 = frequency2 * buffer_size	/ sample_rate;
 }
