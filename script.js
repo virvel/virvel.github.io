@@ -148,6 +148,7 @@ function topath()
 	for (var i = 0; i < buffer_size; ++i)
 	{
 		left_buffer[i] = sintable[phase1];
+		left_audiobuffer[i] = sintable[phase1];
 		right_buffer[i] = sintable[phase2];
 		phase1 = parseInt((phase1 + inc1) % lookuptable_size);
 		phase2 = parseInt((phase2 + inc2) % lookuptable_size);
