@@ -1,22 +1,23 @@
 var ctx;
-var m = 0;
 var c = 100;
-var inc = Math.PI/30;
-var max_x = 500;
-var max_y = 500;
-var buffer_size = 64;
-var lookuptable_size = 512;
-var sample_rate = 1000;
+const max_x = 500;
+const max_y = 500;
+const buffer_size = 64;
+const lookuptable_size = 512;
+const sample_rate = 1000;
+
 var left_buffer = Array(buffer_size);
 var right_buffer = Array(buffer_size);
 var point_buffer;
+
 var sintable = Array(lookuptable_size);
-var frequency1 = 375;
-var frequency2 = 530;
-var inc1 = frequency1 * buffer_size	/ sample_rate;
-var inc2 = frequency2 * buffer_size	/ sample_rate;
-var phase1 = 0;
-var phase2 = 0;
+
+var frequency1;
+var frequency2;
+var inc1;
+var inc2;
+var phase1;
+var phase2
 
 
 function handleOrientation(event) {
@@ -31,10 +32,6 @@ function handleOrientation(event) {
 	inc2 = frequency2 * buffer_size	/ sample_rate;
 }
 
-
-for (var i = 0; i < lookuptable_size; ++i) {
-	sintable[i] = Math.sin(2*Math.PI*i/lookuptable_size);
-}
 
 function toPoint(xx,yy) {
 	return {x: xx, y: yy};
@@ -65,13 +62,11 @@ function catmull_rom_spline(P0, P1, P2, P3, nPoints)
 
 	var i = 0;
 
-	for (var te = t1; te <= t2; te += (t2 - t1)/nPoints)
-	{
-		t[i++] = te;
-	}
 
 	for (var i = 0; i < nPoints; ++i)
 	{
+		t[i] = t1 + (t2 - t1)/nPoints*i;
+
 		A1[i] = add(mul((t1 - t[i])/(t1 - t0), P0),
 					mul((t[i] - t0)/(t1 - t0), P1));
 		A2[i] = add(mul((t2 - t[i])/(t2 - t1), P1),
@@ -112,11 +107,35 @@ function catmull_rom_chain(p) {
 
 }
 
+function prepare() {
+
+	frequency1 = 375;
+	frequency2 = 530;
+	inc1 = frequency1 * buffer_size	/ sample_rate;
+	inc2 = frequency2 * buffer_size	/ sample_rate;
+	phase1 = 0;
+	phase2 = 0;
+
+	for (var i = 0; i < lookuptable_size; ++i) {
+		sintable[i] = Math.sin(2*Math.PI*i/lookuptable_size);
+	}
+}
+
 window.onload = function() {
 	window.addEventListener("deviceorientation", handleOrientation, true);
+
+	prepare();
+
+	var AudioContext = window.AudioContext || window.webkitAudioContext;
+	var actx = new AudioContext();
+	var left_audiobuffer = new AudioBuffer(actx, 16, 1, sample_rate);
+	var right_audiobuffer = new AudioBuffer(actx, 16, 1, sample_rate);
+	var finish = actx.destination;
+
+
 	var duk = document.getElementById("duk");
-		ctx = duk.getContext("2d");
-		ctx.translate(100,100);
+	ctx = duk.getContext("2d");
+	ctx.translate(100,100);
 	var timer = setInterval(draw, 33);
 
 	return timer;
@@ -146,8 +165,7 @@ function toPoints() {
 	return pts;
 }
 
-
-	function draw()
+function draw()
 	{
 
 		topath();
