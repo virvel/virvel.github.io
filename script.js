@@ -1,10 +1,9 @@
 
-var ctx;
 var c = 100;
 var max_x = 500;
 var max_y = 500;
-var buffer_size = 128;
-var lookuptable_size = 1024;
+var buffer_size = 16;
+var lookuptable_size = 512;
 var sample_rate = 44100;
 var num_channels = 2;
 
@@ -30,8 +29,24 @@ function handleOrientation(event) {
 
 	frequency1 = 10000/(alpha+1)+100;
 	frequency2 = 10000/(beta+181)+100;
-	inc1 = frequency1 * lookuptable_size / sample_rate;
-	inc2 = frequency2 * lookuptable_size / sample_rate;
+	inc1 = 2*Math.PI * frequency1 * lookuptable_size / sample_rate;
+	inc2 = 2*Math.PI * frequency2 * lookuptable_size / sample_rate;
+}
+
+function mouseEventHandler(event)
+{
+	x = event.clientX;
+	y = event.clientY;
+
+
+	frequency1 = 15000/(x);
+	frequency2 = 15000/(y);
+	inc1 = 2*Math.PI * frequency1 * lookuptable_size / sample_rate;
+	inc2 = 2*Math.PI * frequency2 * lookuptable_size / sample_rate;
+	console.log(x);
+	console.log(y);
+	console.log(frequency1);
+	console.log(frequency2);
 }
 
 
@@ -108,10 +123,10 @@ function catmull_rom_chain(p) {
 
 function prepare() {
 
-	frequency1 = 1003;
-	frequency2 = 400;
-	inc1 = frequency1 * lookuptable_size / sample_rate;
-	inc2 = frequency2 * lookuptable_size / sample_rate;
+	frequency1 = 468.75; //3750, 3750
+	frequency2 = 1875; //1875, 7500
+	inc1 = 2*Math.PI * frequency1 * lookuptable_size / sample_rate;
+	inc2 = 2*Math.PI * frequency2 * lookuptable_size / sample_rate;
 	phase1 = 0;
 	phase2 = 0;
 
@@ -143,13 +158,6 @@ window.onload = function() {
 	source.buffer = audiobuffer;
 	source.connect(actx.destination);
 	//source.start();
-	// var AudioContext = window.AudioContext || window.webkitAudioContext;
-	// actx = new AudioContext();
-	// audiobuffer = actx.createBuffer(num_channels, buffer_size, sample_rate);
-	// var source = actx.createBufferSource();
-	// source.buffer = audiobuffer;
-	// source.connect(actx.destination);
-	// source.start();
 
 	topath();
 
@@ -157,7 +165,7 @@ window.onload = function() {
 	var duk = document.getElementById("duk");
 	ctx = duk.getContext("2d");
 	ctx.translate(100,100);
-	var timer = setInterval(draw, 50);
+	var timer = setInterval(draw, 30);
 
 	return timer;
 
@@ -191,31 +199,27 @@ function draw()
 
 	topath();
 
-	/*ctx.beginPath();
+	ctx.beginPath();
 	var interp = 1;
 	if (interp) {
 		point_buffer = catmull_rom_chain(toPoints());
 		var point_buffer_length = point_buffer.length;
-	for (var i = 0; i < point_buffer_length; ++i) {
-		ctx.lineTo(point_buffer[i].x*c+c, point_buffer[i].y*c+c);
-	}
+		for (var i = 0; i < point_buffer_length; ++i) {
+			ctx.lineTo(point_buffer[i].x*c+c, point_buffer[i].y*c+c);
+		}
 	}
 	else {
 		for (var i = 0; i < buffer_size; ++i) {
 			ctx.lineTo(left_buffer[i]*c+c, right_buffer[i]*c+c);
 		}
 	}
-	ctx.closePath();*/
-
+	ctx.closePath();
 
 
 	ctx.fillStyle = "rgba(0,30,50,0.85)";
 	ctx.shadowColor = 'rgba(0,30,50,0)';
-    ctx.shadowBlur = 25;
-  	ctx.shadowOffsetX = 0;
-  	ctx.shadowOffsetY = 0;
 	ctx.fillRect(-200,-200,500,500);
-	ctx.lineWidth = "3";
+	ctx.lineWidth = "2";
 	ctx.shadowColor = 'rgba(50,255,200,0.7)';
     ctx.shadowBlur = 10;
   	ctx.shadowOffsetX = 0;
@@ -223,15 +227,4 @@ function draw()
 	ctx.strokeStyle = "rgba(50,255,200,1)";
 	ctx.stroke();
 
-	ctx.beginPath();
-	for (var i = 0; i < buffer_size; ++i) {
-		ctx.lineTo(i+c, left_buffer[i]*c+c);
-	}
-	ctx.stroke();
-
-	ctx.beginPath();
-	for (var i = 0; i < buffer_size; ++i) {
-		ctx.lineTo(i, right_buffer[i]*c+c);
-	}
-	ctx.stroke();
 }
