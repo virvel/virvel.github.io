@@ -2,9 +2,11 @@
    'use strict';
 }());
 var c = 100;
-var buffer_size = 512;
-var lookuptable_size = 512;
+var buffer_size = 64;
+var lookuptable_size = 2048;
 var sample_rate = 44100;
+var num_channels = 2;
+var TWOPI = 2*Math.PI;
 var ctx;
 var left_buffer = new Float32Array(buffer_size);
 var right_buffer = new Float32Array(buffer_size);
@@ -12,6 +14,8 @@ var point_buffer = [];
 var audiobuffer = [];
 
 var sintable = new Float32Array(lookuptable_size);
+
+
 
 var frequency1;
 var frequency2;
@@ -92,14 +96,14 @@ function prepare() {
 
     frequency1 = 468.75; //3750, 3750
     frequency2 = 1875; //1875, 7500
-    inc1 = 2*Math.PI * frequency1 * lookuptable_size / sample_rate;
-    inc2 = 2*Math.PI * frequency2 * lookuptable_size / sample_rate;
+    inc1 = TWOPI * frequency1 * lookuptable_size / sample_rate;
+    inc2 = TWOPI * frequency2 * lookuptable_size / sample_rate;
     phase1 = 0;
     phase2 = 0;
 
     for (var i = 0; i < lookuptable_size; i += 1)
     {
-        sintable[i] = Math.sin(2*Math.PI*i/lookuptable_size);
+        sintable[i] = Math.sin(TWOPI*i/lookuptable_size);
     }
 }
 
@@ -116,7 +120,7 @@ window.onload = function()
     prepare();
 
     var actx = new (window.AudioContext || window.webkitAudioContext)();
-    audiobuffer = actx.createBuffer(2, 512, sample_rate);
+    audiobuffer = actx.createBuffer(num_channels, buffer_size, sample_rate);
     var lll = audiobuffer.getChannelData(0);
     var rrr = audiobuffer.getChannelData(1);
     for (var i = 0; i < audiobuffer.length; i += 1)
@@ -188,8 +192,8 @@ function eventHandler(event)
         frequency2 = 10000/(y+181)+100;
     }
 
-    inc1 = frequency1 * lookuptable_size / sample_rate;
-    inc2 = frequency2 * lookuptable_size / sample_rate;
+    inc1 = TWOPI * frequency1 * lookuptable_size / sample_rate;
+    inc2 = TWOPI * frequency2 * lookuptable_size / sample_rate;
 
     updatePath();
 }
