@@ -1,15 +1,15 @@
-
+(function () {
+   'use strict';
+}());
 var c = 100;
-var max_x = 500;
-var max_y = 500;
-var buffer_size = 64;
+var buffer_size = 512;
 var lookuptable_size = 512;
 var sample_rate = 44100;
-var num_channels = 2;
-
+var ctx;
 var left_buffer = new Float32Array(buffer_size);
 var right_buffer = new Float32Array(buffer_size);
-var point_buffer = Array();
+var point_buffer = [];
+var audiobuffer = [];
 
 var sintable = new Float32Array(lookuptable_size);
 
@@ -19,32 +19,6 @@ var inc1;
 var inc2;
 var phase1;
 var phase2;
-
-
-function eventHandler(event)
-{
-    if (event.type == "mousedown")
-    {
-        x = event.clientX;
-        y = event.clientY;
-        frequency1 = 15000/(x);
-        frequency2 = 15000/(y);
-    }
-
-    else if (event.type == "deviceorientation")
-    {
-        x = event.alpha;
-        y = event.beta;
-        frequency1 = 10000/(x+1)+100;
-        frequency2 = 10000/(y+181)+100;
-    }
-
-    inc1 = frequency1 * lookuptable_size / sample_rate;
-    inc2 = frequency2 * lookuptable_size / sample_rate;
-
-    updatePath();
-}
-
 
 function toPoint(xx,yy)
 {
@@ -68,15 +42,15 @@ function catmull_rom_spline(P0, P1, P2, P3, nPoints)
     var t2 = 2;
     var t3 = 3;
 
-    var t = Array(nPoints);
-    var A1 = Array(nPoints);
-    var A2 = Array(nPoints);
-    var A3 = Array(nPoints);
-    var B1 = Array(nPoints);
-    var B2 = Array(nPoints);
-    var C = Array(nPoints);
+    var t = new Array(nPoints);
+    var A1 = new Array(nPoints);
+    var A2 = new Array(nPoints);
+    var A3 = new Array(nPoints);
+    var B1 = new Array(nPoints);
+    var B2 = new Array(nPoints);
+    var C = new Array(nPoints);
 
-    for (var i = 0; i < nPoints; ++i)
+    for (var i = 0; i < nPoints; i += 1)
     {
         t[i] = t1 + (t2 - t1)/nPoints*i;
 
@@ -102,9 +76,9 @@ function catmull_rom_chain(p)
 
     var numPoints = p.length;
 
-    C = [];
+    var C = [];
     var pts;
-    for (var i = 0; i < numPoints-3; ++i)
+    for (var i = 0; i < numPoints-3; i += 1)
     {
         pts = catmull_rom_spline(p[i], p[i+1], p[i+2], p[i+3], 10);
         C = C.concat(pts);
@@ -123,7 +97,7 @@ function prepare() {
     phase1 = 0;
     phase2 = 0;
 
-    for (var i = 0; i < lookuptable_size; ++i)
+    for (var i = 0; i < lookuptable_size; i += 1)
     {
         sintable[i] = Math.sin(2*Math.PI*i/lookuptable_size);
     }
@@ -145,7 +119,7 @@ window.onload = function()
     audiobuffer = actx.createBuffer(2, 512, sample_rate);
     var lll = audiobuffer.getChannelData(0);
     var rrr = audiobuffer.getChannelData(1);
-    for (var i = 0; i < audiobuffer.length; i++)
+    for (var i = 0; i < audiobuffer.length; i += 1)
     {
         lll[i] = sintable[phase1]*0.1;
         rrr[i] = sintable[phase2]*0.1;
@@ -161,18 +135,18 @@ window.onload = function()
 
     topath();
     point_buffer = catmull_rom_chain(toPoints());
-    
+
     var duk = document.getElementById("duk");
     ctx = duk.getContext("2d");
     ctx.translate(100,100);
     var timer = setInterval(draw, 16);
     return timer;
-}
+};
 
 
 function topath()
 {
-        for (var i = 0; i < buffer_size; ++i)
+        for (var i = 0; i < buffer_size; i += 1)
         {
             left_buffer[i] = sintable[phase1];
             right_buffer[i] = sintable[phase2];
@@ -185,13 +159,41 @@ function toPoints()
 {
 
     var pts = Array();
-    for (var i = 0; i < buffer_size+3; ++i)
+    for (var i = 0; i < buffer_size+3; i += 1)
     {
         pts = pts.concat(toPoint(left_buffer[i%buffer_size],
                                  right_buffer[i%buffer_size]));
     }
     return pts;
 }
+
+function eventHandler(event)
+{
+    var x;
+    var y;
+
+    if (event.type === "mousedown")
+    {
+        x = event.clientX;
+        y = event.clientY;
+        frequency1 = 15000/(x);
+        frequency2 = 15000/(y);
+    }
+
+    else if (event.type === "deviceorientation")
+    {
+        x = event.alpha;
+        y = event.beta;
+        frequency1 = 10000/(x+1)+100;
+        frequency2 = 10000/(y+181)+100;
+    }
+
+    inc1 = frequency1 * lookuptable_size / sample_rate;
+    inc2 = frequency2 * lookuptable_size / sample_rate;
+
+    updatePath();
+}
+
 
 function draw()
     {
@@ -202,16 +204,16 @@ function draw()
     ctx.beginPath();
     var interp = 1;
     if (interp)
-    { 
-        point_buffer_length = point_buffer.length;
-        for (var i = 0; i < point_buffer_length; ++i)
+    {
+        var point_buffer_length = point_buffer.length;
+        for (var i = 0; i < point_buffer_length; i += 1)
         {
             ctx.lineTo(point_buffer[i].x*c+c, point_buffer[i].y*c+c);
         }
     }
     else
     {
-        for (var i = 0; i < buffer_size; ++i)
+        for (var i = 0; i < buffer_size; i += 1)
         {
             ctx.lineTo(left_buffer[i]*c+c, right_buffer[i]*c+c);
         }
@@ -220,10 +222,10 @@ function draw()
 
 
     ctx.fillStyle = "rgba(0,30,50,0.85)";
-    ctx.shadowColor = 'rgba(0,30,50,0)';
+    ctx.shadowColor = "rgba(0,30,50,0)";
     ctx.fillRect(-200,-200,500,500);
     ctx.lineWidth = "2";
-    ctx.shadowColor = 'rgba(50,255,200,0.7)';
+    ctx.shadowColor = "rgba(50,255,200,0.7)";
     ctx.shadowBlur = 10;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
