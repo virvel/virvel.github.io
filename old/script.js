@@ -1,39 +1,28 @@
+'use strict';
 var ctx;
-var m = 0;
 var c = 100;
-var inc = Math.PI/30;
 var max_x = 500;
 var max_y = 500;
-var buffer_size = 64;
-var lookuptable_size = 512;
-var sample_rate = 1000;
-var left_buffer = Array(buffer_size);
-var right_buffer = Array(buffer_size);
+const buffer_size = 256;
+const exponent = 11;
+const lookuptable_size = parseInt(Math.pow(2,exponent));
+const sample_rate = 10000;
+var left_buffer = new Float32Array(buffer_size);
+var right_buffer = new Float32Array(buffer_size);
 var point_buffer;
-var sintable = Array(lookuptable_size);
-var frequency1 = 375;
-var frequency2 = 530;
-var inc1 = frequency1 * buffer_size	/ sample_rate;
-var inc2 = frequency2 * buffer_size	/ sample_rate;
+var sintable = new Float32Array(lookuptable_size);
+var frequency1 = 1300;
+var frequency2 = 1332;
+var inc1 = frequency1 * buffer_size / sample_rate;
+var inc2 = frequency2 * buffer_size / sample_rate;
 var phase1 = 0;
 var phase2 = 0;
 
-
-function handleOrientation(event) {
-	var abs = event.absolute;
-	var alpha = event.alpha;		// [0,360]
-	var beta = event.beta;			// [-180,180]
-	var gamma = event.gamma;		// [-90, 90]
-
-	frequency1 = 10000/(alpha+1)+100;
-	frequency2 = 10000/(beta+181)+100;
-	inc1 = frequency1 * buffer_size	/ sample_rate;
-	inc2 = frequency2 * buffer_size	/ sample_rate;
-}
+const twopi = 2*Math.PI;
 
 
-for (var i = 0; i < lookuptable_size; ++i) {
-	sintable[i] = Math.sin(2*Math.PI*i/lookuptable_size);
+for (let i = 0; i < lookuptable_size; ++i) {
+	sintable[i] = Math.sin(twopi*i/lookuptable_size);
 }
 
 function toPoint(xx,yy) {
@@ -65,12 +54,12 @@ function catmull_rom_spline(P0, P1, P2, P3, nPoints)
 
 	var i = 0;
 
-	for (var te = t1; te <= t2; te += (t2 - t1)/nPoints)
+	for (let te = t1; te <= t2; te += (t2 - t1)/nPoints)
 	{
 		t[i++] = te;
 	}
 
-	for (var i = 0; i < nPoints; ++i)
+	for (let i = 0; i < nPoints; ++i)
 	{
 		A1[i] = add(mul((t1 - t[i])/(t1 - t0), P0),
 					mul((t[i] - t0)/(t1 - t0), P1));
@@ -97,7 +86,7 @@ function catmull_rom_chain(p) {
 
 		var C = Array();
 		var pts;
-		for (var i = 0; i < numPoints-3; ++i)
+		for (let i = 0; i < numPoints-3; ++i)
 		{
 			pts = catmull_rom_spline(p[i], p[i+1], p[i+2], p[i+3], 15);
 			C = C.concat(pts);
@@ -113,20 +102,19 @@ function catmull_rom_chain(p) {
 }
 
 window.onload = function() {
-	window.addEventListener("deviceorientation", handleOrientation, true);
-	var duk = document.getElementById("duk");
+
+        
+        var duk = document.getElementById("duk");
 		ctx = duk.getContext("2d");
-		ctx.translate(100,100);
-	var timer = setInterval(draw, 33);
+		ctx.translate(0,100);
 
-	return timer;
-
+        draw();
 }
 
 
 function topath()
 {
-	for (var i = 0; i < buffer_size; ++i)
+	for (let i = 0; i < buffer_size; ++i)
 	{
 		left_buffer[i] = sintable[phase1];
 		right_buffer[i] = sintable[phase2];
@@ -139,7 +127,7 @@ function topath()
 function toPoints() {
 
 	var pts = Array();
-	for (var i = 0; i < buffer_size+3; ++i) {
+	for (let i = 0; i < buffer_size+3; ++i) {
 		pts = pts.concat(toPoint(left_buffer[i%buffer_size],
 								 right_buffer[i%buffer_size]));
 	}
@@ -149,15 +137,16 @@ function toPoints() {
 
 	function draw()
 	{
-
+                requestAnimationFrame(draw);
 		topath();
 		ctx.beginPath();
 		var interp = 1;
 		if (interp) {
 			point_buffer = catmull_rom_chain(toPoints());
   		var point_buffer_length = point_buffer.length;
-		for (var i = 0; i < point_buffer_length; ++i) {
-			ctx.lineTo(point_buffer[i].x*c+c, point_buffer[i].y*c+c);
+		for (let i = 0; i < point_buffer_length; ++i) {
+			//ctx.lineTo(point_buffer[i].x*c+c, point_buffer[i].y*c+c);
+			ctx.lineTo(i/point_buffer_length*max_y, point_buffer[i].y*c+c);
 		}
 	}
 	else {
@@ -166,18 +155,18 @@ function toPoints() {
 		}
 	}
 
-	ctx.closePath();
-	ctx.fillStyle = "rgba(0,30,50,0.85)";
-	ctx.shadowColor = 'rgba(0,30,50,0)';
-    ctx.shadowBlur = 25;
-  	ctx.shadowOffsetX = 0;
-  	ctx.shadowOffsetY = 0;
-		ctx.fillRect(-200,-200,500,500);
-		ctx.lineWidth = "3";
-		ctx.shadowColor = 'rgba(50,255,200,0.7)';
-    ctx.shadowBlur = 10;
-  	ctx.shadowOffsetX = 0;
-  	ctx.shadowOffsetY = 0;
-	ctx.strokeStyle = "rgba(50,255,200,1)";
-	ctx.stroke();
+        ctx.closePath();
+        ctx.fillStyle = "rgba(0,30,50,0.85)";
+        ctx.shadowColor = 'rgba(0,30,50,0)';
+        ctx.shadowBlur = 25;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.fillRect(0,-200,500,500);
+        ctx.lineWidth = "3";
+        ctx.shadowColor = 'rgba(50,255,200,0.7)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.strokeStyle = "rgba(50,255,200,1)";
+        ctx.stroke();
 }

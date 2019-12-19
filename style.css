@@ -1,0 +1,121 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+html {
+  width: 100%;
+}
+body {
+	background-color: #000;
+	color: #fff;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Open Sans', sans-serif;
+}
+
+input[type=range] {
+	width: 300px;
+}
+input {
+	width: 50px;
+	overflow: hidden;
+}
+
+#bottom {
+	position:absolute;
+	bottom: 20px;
+	left: 10%;
+	width: 80%;
+	height: 100px;
+	background-color: rgba(20, 20, 20, 0.8);
+	display: table;
+  visibility: hidden;
+}
+
+.green, .orange, .red, .yellow, .purple, .brown {
+	display: table-cell;
+	width: 200px;
+	height: 100px;
+  padding: 0;
+}
+
+.blob {
+	height: 10px;
+  border: none;
+}
+
+.yellow .blob{
+	background-color: #E8FF82;
+}
+
+.green .blob{
+  background-color: #48C273;
+}
+
+.orange .blob{
+	background-color: #FACD76;
+}
+
+.red .blob{
+	background-color: #DB5B4E;
+}
+
+.purple .blob{
+	background-color: #684068;
+}
+
+.brown .blob{
+	background-color: black;
+}
+
+.level {
+  text-align: center;
+  height: 2em;
+}
+
+.health {
+  min-height: 8em;
+}
+
+.level, .health, .caution {
+  padding: 15px;
+  line-height: 1.25em;
+  font-size: 14pt;
+  text-align:   justify-all;
+}
+
+#info {
+  font-style: italic;
+  font-weight: bolder;
+  font-size: 30pt;
+  color: #fff;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  border: 3px solid #fff;
+  border-radius: 40px;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+  margin: 0;
+  font-family: serif;
+  cursor: pointer;
+}
+
+.curr {
+  background-color: rgba(20, 20, 20, 0.8);
+  width: 10%;
+  height: 60px;
+  left: 45%;
+  margin: 10px;
+  top: 20px;
+  position: absolute;
+  overflow: hidden;
+}
+
+
+#map { width: 1920px; height: 1080px; }
