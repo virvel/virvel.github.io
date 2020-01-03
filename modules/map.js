@@ -1,7 +1,7 @@
 import {search} from './fetch.js';
 import {Point} from './algs.js';
 
-var map = L.map('map').setView([52.520008, 13.404954], 5);
+export var map = L.map('map').setView([52.520008, 13.404954], 5);
 
 var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -13,7 +13,7 @@ var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ca
 var heat = L.heatLayer([],
         {
           radius: 50,
-          blur: 50,
+          blur: 25,
           gradient: 
               {
               0.: 'green',
@@ -33,3 +33,7 @@ export function mapPointHandler(mapPoints) {
   heat.redraw();
 }
 
+
+export function centerGetter() {
+  return map.getCenter();
+}

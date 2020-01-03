@@ -6,14 +6,19 @@
 
 	<title>L$b</title>
 	<style>
+		* {
+			margin: 0;
+			padding:0;
+		}
 	</style>
 
 </head>
 
 <body>
 
-<canvas id="duk" width="800" height="800">
+<canvas id="duk" width="700" height="700">
 </canvas>
+<div id="stats"></div>
 
 </body>
 
@@ -26,10 +31,10 @@ const ctx = duk.getContext('2d');
 ctx.strokeStyle = "black";
 
 let pts = new Array();
-for (let i = 0; i < 1000; ++i) {
+for (let i = 0; i < 100; ++i) {
 	pts[i] = new Point(
-				20+Math.round(Math.random()*780),
-				20+Math.round(Math.random()*780)
+				Math.round(Math.random()*700),
+				Math.round(Math.random()*700)
 				);
 }
 
@@ -51,6 +56,7 @@ function drawClosest(x,y) {
 	let P = new Point(x,y);
 
 	var sortpts = quickSortPt(pts, P).slice(0,6);
+	document.getElementById("stats").innerHTML = sortpts.map(p => Math.sqrt(p.dist(P)));
 
 	drawPts();
 	ctx.fillStyle = "purple";
@@ -61,7 +67,7 @@ function drawClosest(x,y) {
 	});
 }
 
-document.addEventListener("mousemove", function(e) {
+duk.addEventListener("mousemove", function(e) {
 	let mx = e.clientX;
 	let my = e.clientY;
 	drawClosest(mx,my);

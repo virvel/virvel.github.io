@@ -12,7 +12,7 @@ body {
   margin: 0;
   width: 100%;
   overflow: hidden;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Inria Serif', sans-serif;
 }
 
 input[type=range] {
@@ -32,6 +32,7 @@ input {
 	background-color: rgba(20, 20, 20, 0.8);
 	display: table;
   visibility: hidden;
+  z-index:100;
 }
 
 .green, .orange, .red, .yellow, .purple, .brown {
@@ -82,7 +83,7 @@ input {
 .level, .health, .caution {
   padding: 15px;
   line-height: 1.25em;
-  font-size: 14pt;
+  font-size: 12pt;
   text-align:   justify-all;
 }
 
@@ -90,11 +91,11 @@ input {
   font-style: italic;
   font-weight: bolder;
   font-size: 30pt;
-  color: #fff;
+  color: #000;
   position: absolute;
   bottom: 20px;
   left: 20px;
-  border: 3px solid #fff;
+  border: 3px solid #000;
   border-radius: 40px;
   width: 50px;
   height: 50px;
@@ -105,6 +106,108 @@ input {
   font-family: serif;
   cursor: pointer;
 }
+
+#credits {
+  font-style: italic;
+  font-weight: bolder;
+  font-size: 30pt;
+  color: #000;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border: 3px solid #000;
+  border-radius: 40px;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+  margin: 0;
+  font-family: serif;
+  cursor: pointer;
+  z-index: 2;
+}
+
+#creditDiv {
+  visibility: hidden;
+  background-color: rgb(50,150,50);
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+  margin: 0;
+  z-index: 9000;
+    -webkit-animation: pulsate 100s linear infinite;
+    -moz-animation: pulsate 100s linear infinite;
+    animation: pulsate 100s linear infinite;
+}
+
+@-webkit-keyframes pulsate {
+    0% {background: #E8FF82}
+    20% {background: #48C273}
+    40% {background: #FACD76}
+    60% {background: #DB5B4E}
+    80% {background: #684068}
+    100% {background: #E8FF82}
+}
+@-moz-keyframes pulsate {
+    0% {background: #E8FF82}
+    20% {background: #48C273}
+    40% {background: #FACD76}
+    60% {background: #DB5B4E}
+    80% {background: #684068}
+    100% {background: #E8FF82}
+}
+@keyframes pulsate {
+    0% {background: #E8FF82}
+    20% {background: #48C273}
+    40% {background: #FACD76}
+    60% {background: #DB5B4E}
+    80% {background: #684068}
+    100% {background: #E8FF82}
+}
+
+
+#creditDiv p {
+  font-family: 'Inria Serif', serif;
+  line-height: 1.15em;
+  font-size: 26pt;
+  padding: 40px 20% 10px 20%;
+  display: block;
+  text-align: left;
+}
+
+#creditDiv #exit {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-size: 60pt;
+  color: #000;
+  margin: 0;
+  padding: 0;
+  transform: rotate(45deg);
+  cursor: pointer;
+  height: 15px;
+}
+
+#cross {
+  font-size: 40pt;
+  position: fixed;
+  font-family: "Helvetica Neue", serif;
+  font-weight: lighter;
+  left: 50%;
+  top: 50%;
+  z-index: 50;
+  color: #000;
+  padding: 0;
+  margin: 0;
+}
+
 
 .curr {
   background-color: rgba(20, 20, 20, 0.8);
@@ -119,3 +222,7 @@ input {
 
 
 #map { width: 1920px; height: 1080px; }
+
+.leaflet-control-container {
+  visibility: hidden;
+}

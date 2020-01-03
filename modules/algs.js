@@ -5,24 +5,21 @@ export class Point {
 	}
 
 	dist(b) {
-		return Math.pow(this.x - b.x,2) + Math.pow(this.y - b.y,2);
+		return Math.pow(this.x - b.x, 2) + Math.pow(this.y - b.y, 2);
 	}
 }
 
-export function dist(x1, y1, x2, y2) {
-  return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
-}
 
 
 export function quickSortPt(list, pt) {
 	if (list.length < 2) {
 		return list;
 	}
-	let mid = pt.dist(list[Math.round(list.length/2)]);
+	let mid = pt.dist(list[Math.round(list.length/2)][0]);
 
-	return 	quickSortPt(list.filter(x => pt.dist(x) < mid), pt)
-				.concat(list.filter(x => pt.dist(x) == mid))
-	.concat(quickSortPt(list.filter(x => pt.dist(x) > mid),pt));
+	return 	quickSortPt (list.filter(x => x[0].dist(pt) < mid), pt)
+				.concat (list.filter(x => x[0].dist(pt) == mid) )
+	.concat (quickSortPt(list.filter(x => x[0].dist(pt) > mid), pt));
 }
 
 // functional

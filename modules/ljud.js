@@ -36,15 +36,25 @@ export class OscBank {
     });
   }
 
+      exponentialRampToDissAtTime(diss, time = 0.) {
+    this.partials.forEach((o,i) => {
+      o.frequency.exponentialRampToValueAtTime(this.frequency*Math.pow(2,this.offsets[i]/diss), time);
+    });
+  }
+
   setFrequencyAtTime(frequency, time = 0.) {
     this.partials.forEach((o, i) => {
       o.frequency.setValueAtTime(frequency*Math.pow(2,this.offsets[i]/this.diss), time);
     });
   }
-
+   linearRampToFrequencyAtTime(frequency, time = 0.) {
+    this.partials.forEach((o,i) => {
+      o.frequency.linearRampToValueAtTime(frequency*Math.pow(2,this.offsets[i]/this.diss), time);
+    });
+  }
     exponentialRampToFrequencyAtTime(frequency, time = 0.) {
-    this.partials.forEach((o,index) => {
-      o.frequency.exponentialRampToFrequencyAtTime(frequency*Math.pow(2,this.offsets[i]/this.diss), time);
+    this.partials.forEach((o,i) => {
+      o.frequency.exponentialRampToValueAtTime(frequency*Math.pow(2,this.offsets[i]/this.diss), time);
     });
   }
 
