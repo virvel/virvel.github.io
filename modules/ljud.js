@@ -10,7 +10,7 @@ export class OscBank {
       this.partials[i].frequency.value = this.frequency*Math.pow(2,offset/this.diss);
       this.partials[i].connect(this.gain);
     });
-    this.gain.value= 1/offsets.length;
+    this.gain.value= 1/(Math.pow(offsets.length,2));
 
   }
 
@@ -30,23 +30,17 @@ export class OscBank {
     this.partials.forEach(o => o.stop());
   }
 
-  setDissAtTime(diss, time = 0.) {
-    this.partials.forEach((o, i) => {
-      o.frequency.setValueAtTime(this.frequency*Math.pow(2,this.offsets[i]/diss), time);
-    });
-  }
-
-      exponentialRampToDissAtTime(diss, time = 0.) {
+  exponentialRampToDissAtTime(diss, time = 0.) {
     this.partials.forEach((o,i) => {
       o.frequency.exponentialRampToValueAtTime(this.frequency*Math.pow(2,this.offsets[i]/diss), time);
     });
   }
-
-  setFrequencyAtTime(frequency, time = 0.) {
-    this.partials.forEach((o, i) => {
-      o.frequency.setValueAtTime(frequency*Math.pow(2,this.offsets[i]/this.diss), time);
+  linearRampToDissAtTime(diss, time = 0.) {
+    this.partials.forEach((o,i) => {
+      o.frequency.linearRampToValueAtTime(this.frequency*Math.pow(2,this.offsets[i]/diss), time);
     });
   }
+
    linearRampToFrequencyAtTime(frequency, time = 0.) {
     this.partials.forEach((o,i) => {
       o.frequency.linearRampToValueAtTime(frequency*Math.pow(2,this.offsets[i]/this.diss), time);

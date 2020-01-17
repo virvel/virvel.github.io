@@ -22,9 +22,7 @@ export function quickSortPt(list, pt) {
 	.concat (quickSortPt(list.filter(x => x[0].dist(pt) > mid), pt));
 }
 
-// functional
 export const reduce = ((xs, f, id) => xs.length == 0 ? id : f(xs[0], reduce(xs.slice(1), f, id)));
 export const cumsum = (xs => reduce(xs, add, 0));
-// helpers
 export const add = ((x,y) => x+y);
 

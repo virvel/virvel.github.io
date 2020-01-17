@@ -72,19 +72,6 @@ document.addEventListener("resize", function() {
 
 const nb_oscs = 6;
 
-
-// Generate randoms points for testing
-const xx = new Array(nb_oscs);
-const yy = new Array(nb_oscs);
-const f = new Array(nb_oscs);
-for (let i = 0; i < nb_oscs; ++i) {
-  xx[i] = Math.random()*w;
-  yy[i] = Math.random()*h;
-  f[i] = 100+Math.random()*4900;
-}
-
-
-
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 unlockAudioContext(audioCtx);
 
@@ -108,77 +95,67 @@ for (let i = 0; i < nb_oscs; i++) {
   var s = Math.floor(Math.random()*notes.length);
   frequencies[i] = notes[s]/2;
 
-  oscs[i] = new OscBank(audioCtx, frequencies[i], [1,2,3,5,7], f[i]/100);
+  oscs[i] = new OscBank(audioCtx, frequencies[i], [1,2,3,5,7], 1200);
   oscs[i].connect(pannerNodes[i]);
   oscs[i].start();
 }
 
+var mapPointsMap = new Map();
 var mapPoints = new Array();
 
 function fetchHandler(response) {
+  var newPts = new Array();
   var res= JSON.parse(response).data;
   res.forEach( (p,i) => {
-      var aqi = parseFloat(p.aqi)/1000.0;
-      if (Number.isNaN(aqi)) {
-        aqi = 0;
-      }
-      mapPoints[i] = [new Point(parseFloat(p.lat), parseFloat(p.lon)), aqi];
-    }
+      var aqi = parseFloat(p.aqi);
+      if (!Number.isNaN(aqi)) {
+        if (!mapPointsMap.has(p.uid)) {
+          mapPointsMap.set(p.uid, [new Point(parseFloat(p.lat), parseFloat(p.lon)), aqi]);
+          newPts.push([new Point(parseFloat(p.lat), parseFloat(p.lon)), aqi]);
+        }}}
     );
-  mapPointHandler(mapPoints);
-
-console.log(mapPoints.length);
+  mapPoints = Array.from(mapPointsMap.values()).concat(newPts);
+  mapPointHandler(newPts);
 }
 
-search(
-        -90,
-        -180,
-        90,
-        180,
+var tajmer = setInterval(ssssss, 1000);
+
+function ssssss() {
+      var bnds = map.getBounds();
+      
+      search(
+        bnds._northEast.lat,
+        bnds._northEast.lng,
+        bnds._southWest.lat,
+        bnds._southWest.lng,
         fetchHandler
         );
 
-
-/*
-document.addEventListener("mousemove", function(e) {
-  var mouseX = e.clientX;
-  var mouseY = e.clientY;
-  for (let i = 0; i < nb_oscs; ++i) {
-    var euc = dist(mouseX, mouseY, xx[i], yy[i]);
-    var px  = (xx[i]-mouseX)/w;
-    var py = (yy[i]-mouseY)/h;
-
-    pannerNodes[i].positionX.linearRampToValueAtTime(px, audioCtx.currentTime+0.01);
-    pannerNodes[i].positionY.linearRampToValueAtTime(py, audioCtx.currentTime+0.01);
-
-    gainNodes[i].gain.linearRampToValueAtTime(
-      0.5*Math.exp(-euc/500)/nb_oscs,
-      audioCtx.currentTime + 0.01
-    );
-  }
-},false );*/
-
-
+      if (mapPoints.length > 10000)
+      {
+        window.clearInterval(tajmer)
+      }
+}
 
 map.addEventListener("move", function() {
     var center;
       center = centerGetter();
       var centerPoint = new Point(center.lat, center.lng);
       var closest = quickSortPt(mapPoints, centerPoint).slice(0,nb_oscs+1);
-      
+
       for (let i = 0; i < nb_oscs; ++i) {
           var euc = centerPoint.dist(closest[i][0]);
           var px  = (closest[i][0].x-centerPoint.x);
           var py = (closest[i][0].y-centerPoint.y);
 
-          oscs[i].exponentialRampToFrequencyAtTime(50+500*closest[i][1], audioCtx.currentTime+0.1);
-          oscs[i].exponentialRampToDissAtTime(300-200*closest[i][1], audioCtx.currentTime+0.1);
+          oscs[i].linearRampToFrequencyAtTime(10*closest[i][1], audioCtx.currentTime+0.1);
+          oscs[i].linearRampToDissAtTime(1000-closest[i][1], audioCtx.currentTime+0.1);
           pannerNodes[i].positionX.linearRampToValueAtTime(px, audioCtx.currentTime+0.1);
           pannerNodes[i].positionY.linearRampToValueAtTime(py, audioCtx.currentTime+0.1);
-
           gainNodes[i].gain.linearRampToValueAtTime(
-            0.5*Math.exp(-euc/50)/nb_oscs,
+            0.25*Math.exp(-euc/50)/nb_oscs,
             audioCtx.currentTime + 0.01
           );
+
       }
 });

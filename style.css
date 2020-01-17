@@ -4,6 +4,7 @@
 }
 html {
   width: 100%;
+  height: 100%;
 }
 body {
 	background-color: #000;
@@ -11,35 +12,32 @@ body {
   padding: 0;
   margin: 0;
   width: 100%;
+  height: 100%;
   overflow: hidden;
-  font-family: 'Inria Serif', sans-serif;
+  font-family: 'Inria Serif', serif;
 }
 
-input[type=range] {
-	width: 300px;
-}
-input {
-	width: 50px;
-	overflow: hidden;
-}
 
 #bottom {
-	position:absolute;
-	bottom: 20px;
-	left: 10%;
-	width: 80%;
-	height: 100px;
+  position: absolute;
+  top: 0px;
+  left: 12.5%;
+  width: 75%;
 	background-color: rgba(20, 20, 20, 0.8);
-	display: table;
   visibility: hidden;
   z-index:100;
 }
 
+#bottom * {
+
+  font-family: 'Inria Serif', serif;
+  font-size: 14pt;
+}
+
 .green, .orange, .red, .yellow, .purple, .brown {
-	display: table-cell;
-	width: 200px;
+  display: table-row;
+	width: 70em;
 	height: 100px;
-  padding: 0;
 }
 
 .blob {
@@ -47,76 +45,73 @@ input {
   border: none;
 }
 
-.yellow .blob{
-	background-color: #E8FF82;
-}
-
-.green .blob{
+.green {
   background-color: #48C273;
 }
-
-.orange .blob{
+.yellow {
+  background-color: #E8FF82;
+  color: #000;
+}
+.orange {
 	background-color: #FACD76;
+  color: #000;
 }
-
-.red .blob{
-	background-color: #DB5B4E;
+.red {
+  background-color: #DB5B4E;
 }
-
-.purple .blob{
-	background-color: #684068;
+.purple {
+  background-color: #684068;
 }
-
-.brown .blob{
-	background-color: black;
+.brown {
+  background-color: black;
 }
 
 .level {
   text-align: center;
-  height: 2em;
 }
 
 .health {
-  min-height: 8em;
 }
 
 .level, .health, .caution {
-  padding: 15px;
+  display: table-cell;
+  padding: 25px;
   line-height: 1.25em;
   font-size: 12pt;
   text-align:   justify-all;
 }
 
 #info {
-  font-style: italic;
-  font-weight: bolder;
-  font-size: 30pt;
+  font-size: 40px;
+  line-height: 40px;
   color: #000;
   position: absolute;
   bottom: 20px;
   left: 20px;
-  border: 3px solid #000;
-  border-radius: 40px;
+  border: 1px solid #000;
+  border-radius: 50px;
   width: 50px;
   height: 50px;
   text-align: center;
   vertical-align: middle;
   padding: 0;
   margin: 0;
-  font-family: serif;
   cursor: pointer;
+  font-family: "Helvetica Neue", Arial, serif;
+  font-weight: lighter;
 }
 
 #credits {
   font-style: italic;
   font-weight: bolder;
-  font-size: 30pt;
+  line-height: 50px;
+  font-size: 35px;
   color: #000;
   position: fixed;
   bottom: 20px;
   right: 20px;
-  border: 3px solid #000;
-  border-radius: 40px;
+  border: 1px solid #000;
+  border-radius: 50px;
   width: 50px;
   height: 50px;
   text-align: center;
@@ -129,6 +124,7 @@ input {
 }
 
 #creditDiv {
+  font-family: 'Inria Serif', sans-serif;
   visibility: hidden;
   background-color: rgb(50,150,50);
   position: absolute;
@@ -136,15 +132,16 @@ input {
   left: 0px;
   width: 100%;
   height: 100%;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   text-align: center;
   vertical-align: middle;
   padding: 0;
   margin: 0;
   z-index: 9000;
-    -webkit-animation: pulsate 100s linear infinite;
-    -moz-animation: pulsate 100s linear infinite;
-    animation: pulsate 100s linear infinite;
+  -webkit-animation: pulsate 100s linear infinite;
+  -moz-animation: pulsate 100s linear infinite;
+  animation: pulsate 100s linear infinite;
 }
 
 @-webkit-keyframes pulsate {
@@ -176,7 +173,7 @@ input {
 #creditDiv p {
   font-family: 'Inria Serif', serif;
   line-height: 1.15em;
-  font-size: 26pt;
+  font-size: 24pt;
   padding: 40px 20% 10px 20%;
   display: block;
   text-align: left;
@@ -198,16 +195,23 @@ input {
 #cross {
   font-size: 40pt;
   position: fixed;
-  font-family: "Helvetica Neue", serif;
+  font-family: "Helvetica Neue", Arial, serif;
   font-weight: lighter;
   left: 50%;
   top: 50%;
+  margin: -50px -100px 0 0;
   z-index: 50;
   color: #000;
-  padding: 0;
-  margin: 0;
+
 }
 
+
+#cross, #credits, #info, #creditDiv #exit {
+  -webkit-user-select: none; /* Safari */        
+-moz-user-select: none; /* Firefox */
+-ms-user-select: none; /* IE10+/Edge */
+user-select: none; /* Standard */
+}
 
 .curr {
   background-color: rgba(20, 20, 20, 0.8);
@@ -221,8 +225,4 @@ input {
 }
 
 
-#map { width: 1920px; height: 1080px; }
-
-.leaflet-control-container {
-  visibility: hidden;
-}
+#map { margin: 0; padding: 0; height: 100%;}

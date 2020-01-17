@@ -35,7 +35,7 @@ const colors =[
     color: "brown",
     level: "Hazardous",
     health: "Health alert: everyone may experience more serious health effects.",
-    caution: "Everyone should avoid all outdoor exertion"
+    caution: "Everyone should avoid all outdoor exertion."
   }
 ];
 
