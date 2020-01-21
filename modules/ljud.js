@@ -1,5 +1,5 @@
 export class OscBank {
-  constructor(audioCtx, frequency, offsets, diss = 250) {
+  constructor(audioCtx, frequency, offsets, diss) {
     this.frequency = frequency;
     this.offsets = offsets;
     this.diss = diss;
@@ -31,24 +31,26 @@ export class OscBank {
   }
 
   exponentialRampToDissAtTime(diss, time = 0.) {
+    this.diss = diss;
     this.partials.forEach((o,i) => {
-      o.frequency.exponentialRampToValueAtTime(this.frequency*Math.pow(2,this.offsets[i]/diss), time);
+      o.frequency.exponentialRampToValueAtTime(2* this.frequency * Math.exp(this.offsets[i]/diss), time);
     });
   }
   linearRampToDissAtTime(diss, time = 0.) {
+    this.diss = diss;
     this.partials.forEach((o,i) => {
-      o.frequency.linearRampToValueAtTime(this.frequency*Math.pow(2,this.offsets[i]/diss), time);
+      o.frequency.linearRampToValueAtTime(2* this.frequency * Math.exp(this.offsets[i]/diss), time);
     });
   }
 
    linearRampToFrequencyAtTime(frequency, time = 0.) {
     this.partials.forEach((o,i) => {
-      o.frequency.linearRampToValueAtTime(frequency*Math.pow(2,this.offsets[i]/this.diss), time);
+      o.frequency.linearRampToValueAtTime(2* frequency * Math.exp(this.offsets[i]/this.diss), time);
     });
   }
     exponentialRampToFrequencyAtTime(frequency, time = 0.) {
     this.partials.forEach((o,i) => {
-      o.frequency.exponentialRampToValueAtTime(frequency*Math.pow(2,this.offsets[i]/this.diss), time);
+      o.frequency.exponentialRampToValueAtTime(2* frequency * Math.exp(this.offsets[i]/this.diss), time);
     });
   }
 

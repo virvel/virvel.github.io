@@ -23,55 +23,17 @@
 </body>
 
 
-<script type="module">
-import {quickSortPt, Point} from './modules/algs.js';
+<script>
 
-const duk = document.getElementById('duk');
-const ctx = duk.getContext('2d');
-ctx.strokeStyle = "black";
+var frequency = 440;
 
-let pts = new Array();
-for (let i = 0; i < 100; ++i) {
-	pts[i] = new Point(
-				Math.round(Math.random()*700),
-				Math.round(Math.random()*700)
-				);
-}
+var offsets = [1,2,3,5,7];
+var diss = 50;
 
-function drawPts() {
-	ctx.fillStyle = "white";
-	ctx.fillRect(0,0,800,800);
-
-	ctx.strokeStyle ="black";
-	pts.forEach( p => {
-		ctx.beginPath();
-		ctx.ellipse(p.x, p.y, 1, 1, 0, 0, 2*Math.PI);
-		ctx.stroke();
-	});
-}
-
-
-function drawClosest(x,y) {
-
-	let P = new Point(x,y);
-
-	var sortpts = quickSortPt(pts, P).slice(0,6);
-	document.getElementById("stats").innerHTML = sortpts.map(p => Math.sqrt(p.dist(P)));
-
-	drawPts();
-	ctx.fillStyle = "purple";
-	sortpts.forEach(p => {
-		ctx.beginPath();
-		ctx.ellipse(p.x, p.y, 5, 5, 0, 0, 2*Math.PI);
-		ctx.fill();
-	});
-}
-
-duk.addEventListener("mousemove", function(e) {
-	let mx = e.clientX;
-	let my = e.clientY;
-	drawClosest(mx,my);
+offsets.forEach( (o,i) => {
+	console.log(frequency * Math.pow(2,this.offsets[i]*diss/1200));
 });
+
 </script>
 
 

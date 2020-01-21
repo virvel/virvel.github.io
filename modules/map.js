@@ -32,16 +32,16 @@ var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ca
 
 var heat = L.heatLayer([],
         {
-          radius: 25,
-          blur: 25,
+          radius: 15,
+          blur: 15,
           max:1000,
           gradient: 
               {
               0.: 'green',
-              0.4: 'lime',
+              0.3: 'lime',
               0.5: 'orange',
               0.7: 'red',
-              0.9: 'purple',
+              0.95: 'purple',
               1.0: 'black'
             },
           minOpacity: 0.2
@@ -55,7 +55,3 @@ export function mapPointHandler(mapPoints) {
   });
 }
 
-
-export function centerGetter() {
-  return map.getCenter();
-}

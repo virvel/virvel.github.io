@@ -2,7 +2,7 @@
 import {search} from './modules/fetch.js';
 import {colors} from './modules/colors.js';
 import {Point, quickSortPt} from './modules/algs.js';
-import {mapPointHandler, map, centerGetter} from './modules/map.js';
+import {mapPointHandler, map} from './modules/map.js';
 import {OscBank, unlockAudioContext} from './modules/ljud.js';
 
 var wallOfText = "<p>„I Breathe” är ett nytt digitalt konstverk av Cha Blasco där han utforskar luftkvalitet och föroreningsindex i realtid. Genom att använda datasonification, en process där datainformation omvandlas till ljud och musik, får publiken en interaktiv och känslomässig upplevelse av den luft vi andas. Cha Blasco har ett stort engagemang i klimatfrågor och vill inspirera till kritisk självreflexivitet genom att ge en större förståelse de hälsorisker vi står framför.</p> \
@@ -39,15 +39,23 @@ var wallOfText = "<p>„I Breathe” är ett nytt digitalt konstverk av Cha Blas
   }
 
   const info = document.getElementById("info");
+  const infoexit = document.querySelector("#bottom #exit");
+
   info.addEventListener("click", function() {
+    bottom.style.visibility = (bottom.style.visibility === "hidden") ? "visible" : "hidden";
+    
+  });
+
+  infoexit.addEventListener("click", function() {
     bottom.style.visibility = (bottom.style.visibility === "hidden") ? "visible" : "hidden";
   });
 
 
+
 function showCredit() {
   creditDiv.style.visibility = (creditDiv.style.visibility === "hidden") ? "visible" : "hidden";
-  cross.style.visibility = (creditDiv.style.visibility === "hidden") ? "visible" : "hidden";
 }
+
 
 document.getElementById("credits").addEventListener("click", function() {
   showCredit();
@@ -70,12 +78,12 @@ document.addEventListener("resize", function() {
   h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 });
 
-const nb_oscs = 6;
+const nb_oscs = 8;
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 unlockAudioContext(audioCtx);
 
-const notes = [261.6, 293.7, 329.6, 349.2, 392.0, 440.0, 493.9, 523.3];
+const notes = [220.0, 261.6, 329.6, 392.0, 523.3, 659.3];
 const oscs = new Array(nb_oscs);
 const frequencies = new Array(nb_oscs);
 var vol = .005/nb_oscs;
@@ -137,25 +145,44 @@ function ssssss() {
       }
 }
 
+function scale(x, a1, a2, b1, b2) {
+  return clip((b2-b1)*(x-a1)/(a2-a1) + b1, Math.min(b1,b2), Math.max(b1,b2));
+}
+
+
+function clip(x, min, max) {
+  return Math.max(Math.min(x, max),min);
+}
+
+var oldCenter = new Point(0,0);
+
 map.addEventListener("move", function() {
-    var center;
-      center = centerGetter();
+    var center = map.getCenter();
       var centerPoint = new Point(center.lat, center.lng);
       var closest = quickSortPt(mapPoints, centerPoint).slice(0,nb_oscs+1);
 
-      for (let i = 0; i < nb_oscs; ++i) {
-          var euc = centerPoint.dist(closest[i][0]);
-          var px  = (closest[i][0].x-centerPoint.x);
-          var py = (closest[i][0].y-centerPoint.y);
+      if (typeof(closest) !== 'undefined' && oldCenter.dist(centerPoint) > 0.001) {
+        for (let i = 0; i < nb_oscs; ++i) {
+            var euc = centerPoint.dist(closest[i][0]);
+            var px  = (closest[i][0].x-centerPoint.x);
+            var py = (closest[i][0].y-centerPoint.y);
 
-          oscs[i].linearRampToFrequencyAtTime(10*closest[i][1], audioCtx.currentTime+0.1);
-          oscs[i].linearRampToDissAtTime(1000-closest[i][1], audioCtx.currentTime+0.1);
-          pannerNodes[i].positionX.linearRampToValueAtTime(px, audioCtx.currentTime+0.1);
-          pannerNodes[i].positionY.linearRampToValueAtTime(py, audioCtx.currentTime+0.1);
-          gainNodes[i].gain.linearRampToValueAtTime(
-            0.25*Math.exp(-euc/50)/nb_oscs,
-            audioCtx.currentTime + 0.01
-          );
+            //oscs[i].linearRampToFrequencyAtTime(10*closest[i][1], audioCtx.currentTime+0.1);
 
+            oscs[i].linearRampToDissAtTime(clip(20000*Math.exp(-closest[i][1]/30)+3, 3,20000), audioCtx.currentTime+0.05);
+            if (pannerNodes[i].positionY) {
+              pannerNodes[i].positionX.linearRampToValueAtTime(px, audioCtx.currentTime+0.1);
+              pannerNodes[i].positionY.linearRampToValueAtTime(py, audioCtx.currentTime+0.1);
+            }
+            else {
+              pannerNodes[i].setPosition(px,py,0);
+            }
+            gainNodes[i].gain.linearRampToValueAtTime(
+              0.25*Math.exp(-euc/50)/(nb_oscs*2),
+              audioCtx.currentTime + 0.01
+            );
+
+        }
       }
+      oldCenter = centerPoint;
 });
