@@ -318,3 +318,11 @@ user-select: none; /* Standard */
 .leaflet-control-zoom, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
   display: none;
 }
+
+input {
+  font-size: 16px;
+}
+
+.search-tooltip {
+  font-size: 16px;
+}
