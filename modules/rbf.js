@@ -13,8 +13,6 @@ function fastexp(x) {
   }
 }
 
-
-
 const fastgauss = (r,gamma) => { return fastexp(-Math.pow(r/gamma,2)) };
 const gauss = (r,gamma) => { return Math.exp(-Math.pow(r/gamma,2)) };
 const inverse_quadratic = (r,gamma) => { return 1/(1 + Math.pow(gamma+r,2)) };

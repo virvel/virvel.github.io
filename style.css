@@ -88,7 +88,7 @@ body {
   background-color: #684068;
 }
 .brown {
-  background-color: black;
+  background-color: #301000;
 }
 
 .level {
@@ -165,7 +165,6 @@ body {
 
 #creditDiv {
   font-family: 'Inria Serif', sans-serif;
-  visibility: hidden;
   background-color: rgb(50,150,50);
   position: absolute;
   top: 0px;
@@ -211,6 +210,10 @@ body {
     100% {background: #E8FF82}
 }
 
+#creditDiv a:link, #creditDiv a:visited, #creditDiv a:hover, #creditDiv a:active {
+  color: #fff;
+  text-decoration: none;
+}
 
 #creditDiv p {
   font-family: 'Inria Serif', serif;

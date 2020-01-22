@@ -1,6 +1,3 @@
-import {search} from './fetch.js';
-import {Point} from './algs.js';
-
 export var map = L.map('map',
   {
     worldCopyJump: true,
@@ -24,7 +21,6 @@ L.control.search({
   .addTo(map);
 
 var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 5,
     minZoom: 5
@@ -33,7 +29,7 @@ var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ca
 var heat = L.heatLayer([],
         {
           radius: 15,
-          blur: 15,
+          blur: 30,
           max:1000,
           gradient: 
               {
@@ -49,9 +45,7 @@ var heat = L.heatLayer([],
 
 
 export function mapPointHandler(mapPoints) {
-
   mapPoints.forEach(p => {
     heat.addLatLng(new L.LatLng(p[0].x, p[0].y, p[1]))
   });
 }
-

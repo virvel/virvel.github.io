@@ -1,88 +1,48 @@
 'use strict';
 import {search} from './modules/fetch.js';
 import {colors} from './modules/colors.js';
-import {Point, quickSortPt} from './modules/algs.js';
+import {Point, quickSortPt, clip} from './modules/algs.js';
 import {mapPointHandler, map} from './modules/map.js';
 import {OscBank, unlockAudioContext} from './modules/ljud.js';
 
-var wallOfText = "<p>„I Breathe” är ett nytt digitalt konstverk av Cha Blasco där han utforskar luftkvalitet och föroreningsindex i realtid. Genom att använda datasonification, en process där datainformation omvandlas till ljud och musik, får publiken en interaktiv och känslomässig upplevelse av den luft vi andas. Cha Blasco har ett stort engagemang i klimatfrågor och vill inspirera till kritisk självreflexivitet genom att ge en större förståelse de hälsorisker vi står framför.</p> \
-<p>„I Breathe” presenteras som en webbplatsbaserad audiovisuell installation där användaren individuellt kan uppleva en världsomspännande kartografisk resa som alltid ändrar luftkvalitet och föroreningsindex i realtid.</br>\</p>\
-<p>Luftkvalitetsindexet är baserat på mätning av partiklar (PM2,5 och PM10), Ozon (O3), kvävedioxid (NO2), svaveldioxid (SO2) och kolmonoxid (CO). De flesta av stationerna på kartan övervakar både PM2.5- och PM10-data, men det finns få undantag där endast PM10 är tillgänglig. Alla mätningar är baserade på timavläsningar. Detta index kategoriseras efter sex olika gruppnivåer: Bra (grön), Måttligt (gul), Ohälsosamt för känsliga grupper (orange), Ohälsosamt (röd), Mycket ohälsosamt (lila) och Farligt (brun).</p>"
-
-
-  var bottom = document.getElementById("bottom");
-
-  for (let c of colors) { 
-    var color = document.createElement('div');
-    color.className = c.color;
-    bottom.appendChild(color);
-
-    var hr = document.createElement("hr");
-    hr.className = "blob";
-    color.appendChild(hr);
-
-    var level = createDiv("level", c.level);
-    color.appendChild(level);
-
-    var health = createDiv("health", c.health);
-    color.appendChild(health);
-
-    var caution = createDiv("caution", c.caution);
-    color.appendChild(caution);
-  }
-
-  function createDiv(className, innerHTML) {
-    var res = document.createElement("div");
-    res.className = className;
-    res.innerHTML = innerHTML;
-    return res;
-  }
-
-  const info = document.getElementById("info");
-  const infoexit = document.querySelector("#bottom #exit");
-
-  info.addEventListener("click", function() {
-    bottom.style.visibility = (bottom.style.visibility === "hidden") ? "visible" : "hidden";
-    
-  });
-
-  infoexit.addEventListener("click", function() {
-    bottom.style.visibility = (bottom.style.visibility === "hidden") ? "visible" : "hidden";
-  });
-
-
-
-function showCredit() {
-  creditDiv.style.visibility = (creditDiv.style.visibility === "hidden") ? "visible" : "hidden";
+function createDiv(className, innerHTML) {
+  var res = document.createElement("div");
+  res.className = className;
+  res.innerHTML = innerHTML;
+  return res;
 }
 
+const bottom = document.getElementById("bottom");
 
-document.getElementById("credits").addEventListener("click", function() {
-  showCredit();
-});
-
-document.getElementById("exit").addEventListener("click", function() {
-  showCredit();
-});
-
-
-function dist(x1,y1, x2, y2) {
-  return Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
+for (let c of colors) { 
+  var color = document.createElement('div');
+  color.className = c.color;
+  bottom.appendChild(color);
+  var hr = document.createElement("hr");
+  hr.className = "blob";
+  color.appendChild(hr);
+  color.appendChild(createDiv("level", c.level));
+  color.appendChild(createDiv("health", c.health));
+  color.appendChild(createDiv("caution", c.caution));
 }
 
+function addElementHider(elementToListenTo, elementToShow) {
+  elementToListenTo.addEventListener("click", function() {
+    elementToShow.style.visibility = (elementToShow.style.visibility === "hidden") ? "visible" : "hidden";
+  });
+}
 
-let w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-let h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-document.addEventListener("resize", function() {
-  w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-  h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-});
+addElementHider(document.querySelector("#info"), bottom)
+addElementHider(document.querySelector("#bottom #exit"), bottom);
+addElementHider(document.querySelector("#credits"), creditDiv)
+addElementHider(document.querySelector("#exit"), creditDiv);
 
-const nb_oscs = 8;
+
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 unlockAudioContext(audioCtx);
 
+const nb_oscs = 8;
 const notes = [220.0, 261.6, 329.6, 392.0, 523.3, 659.3];
 const oscs = new Array(nb_oscs);
 const frequencies = new Array(nb_oscs);
@@ -122,15 +82,30 @@ function fetchHandler(response) {
           newPts.push([new Point(parseFloat(p.lat), parseFloat(p.lon)), aqi]);
         }}}
     );
-  mapPoints = Array.from(mapPointsMap.values()).concat(newPts);
+  mapPoints = mapPoints.concat(newPts);
   mapPointHandler(newPts);
 }
 
-var tajmer = setInterval(ssssss, 1000);
+var bnds = map.getBounds();
 
-function ssssss() {
+search(
+  bnds._northEast.lat,
+  bnds._northEast.lng,
+  bnds._southWest.lat,
+  bnds._southWest.lng,
+  fetchHandler
+  );
+
+
+
+var oldCenter = new Point(0,0);
+
+map.addEventListener("moveend", pointAdder);
+
+function pointAdder() {
+
       var bnds = map.getBounds();
-      
+
       search(
         bnds._northEast.lat,
         bnds._northEast.lng,
@@ -141,20 +116,9 @@ function ssssss() {
 
       if (mapPoints.length > 10000)
       {
-        window.clearInterval(tajmer)
+        map.removeEventListener("moveend", pointAdder, false);
       }
 }
-
-function scale(x, a1, a2, b1, b2) {
-  return clip((b2-b1)*(x-a1)/(a2-a1) + b1, Math.min(b1,b2), Math.max(b1,b2));
-}
-
-
-function clip(x, min, max) {
-  return Math.max(Math.min(x, max),min);
-}
-
-var oldCenter = new Point(0,0);
 
 map.addEventListener("move", function() {
     var center = map.getCenter();
@@ -166,8 +130,6 @@ map.addEventListener("move", function() {
             var euc = centerPoint.dist(closest[i][0]);
             var px  = (closest[i][0].x-centerPoint.x);
             var py = (closest[i][0].y-centerPoint.y);
-
-            //oscs[i].linearRampToFrequencyAtTime(10*closest[i][1], audioCtx.currentTime+0.1);
 
             oscs[i].linearRampToDissAtTime(clip(20000*Math.exp(-closest[i][1]/30)+3, 3,20000), audioCtx.currentTime+0.05);
             if (pannerNodes[i].positionY) {
