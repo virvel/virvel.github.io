@@ -123,7 +123,9 @@ function pointAdder() {
 map.addEventListener("move", function() {
     var center = map.getCenter();
       var centerPoint = new Point(center.lat, center.lng);
-      var closest = quickSortPt(mapPoints, centerPoint).slice(0,nb_oscs+1);
+      //var closest = quickSortPt(mapPoints, centerPoint).slice(0,nb_oscs+1);
+      var closest = mapPoints.sort((p,u) => p[0].dist(centerPoint) - u[0].dist(centerPoint)).slice(0,nb_oscs+1);
+      console.log(closest)
 
       if (typeof(closest) !== 'undefined' && oldCenter.dist(centerPoint) > 0.001) {
         for (let i = 0; i < nb_oscs; ++i) {
