@@ -4,11 +4,12 @@ export class OscBank {
     this.frequency = frequency;
     this.offsets = offsets;
     this.diss = diss;
-    this.partials = this.offsets.map(() => new OscillatorNode(audioCtx, {type:"triangle"}));
+    this.partials = this.offsets.map(() => audioCtx.createOscillator());
     this.gain = audioCtx.createGain();
 
     offsets.forEach((offset,i) => {
       this.partials[i].frequency.value = this.frequency*Math.pow(2,offset/this.diss);
+      this.partials[i].type = "triangle";
       this.partials[i].connect(this.gain);
     });
     this.gain.value= 1/(Math.pow(offsets.length,2));

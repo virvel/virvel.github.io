@@ -44,8 +44,8 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 unlockAudioContext(audioCtx);
 
 var reverb  = Freeverb(audioCtx);
-reverb.roomSize = 0.8
-reverb.dampening = 10000
+reverb.roomSize = 0.5
+reverb.dampening = 5000
 reverb.wet.value = 0.5
 reverb.dry.value = 1.
 reverb.connect(audioCtx.destination);
@@ -171,7 +171,6 @@ map.addEventListener("move", function() {
       var hej = sum(mjau)/nb_oscs;
       intensity = scale(hej, 0, 200, 125, 25);
 
-      console.log(hej)
       if (typeof(closest) !== 'undefined' && oldCenter.dist(centerPoint) > 0.001) {
         for (let i = 0; i < nb_oscs; ++i) {
             var euc = centerPoint.dist(closest[i][0]);
