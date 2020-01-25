@@ -3,7 +3,6 @@
 <head>
 	<meta charset="utf-8"/>
 		<meta name="viewport" content="initial-scale=1.0">
-
 	<title>L$b</title>
 	<style>
 		* {
@@ -11,27 +10,87 @@
 			padding:0;
 		}
 	</style>
-
 </head>
-
 <body>
 
-<canvas id="duk" width="700" height="700">
-</canvas>
-<div id="stats"></div>
+<input type="submit" id="butt" value="mjau"></input>
 
 </body>
+<script type="module">
+
+import {drunk, fold, Queue} from './modules/algs.js';
+import {OscBank} from './modules/ljud.js';
+import {Freeverb} from './freeverb.js';
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+var reverb  = Freeverb(audioCtx);
+reverb.roomSize = 0.5
+reverb.dampening = 10000
+reverb.wet.value = 0.5
+reverb.dry.value = 1.
+reverb.connect(audioCtx.destination);
+
+const nb_oscs = 6,
+	  notes = [220.0, 261.6, 329.6, 392.0, 523.3, 659.3],
+	  oscs = new Array(nb_oscs),
+	  frequencies = new Array(nb_oscs),
+	  pannerNodes = new Array(nb_oscs),
+	  gainNodes = new Array(nb_oscs);
+var vol = 0.5/nb_oscs;
+
+for (let i = 0; i < nb_oscs; i++) {
+
+  gainNodes[i] = audioCtx.createGain();
+  gainNodes[i].connect(reverb);
+  gainNodes[i].gain.value = vol;
+
+  pannerNodes[i] = audioCtx.createPanner();
+  pannerNodes[i].connect(gainNodes[i]);
+  pannerNodes[i].setPosition(0.,0.,0);
+
+  frequencies[i] = notes[i]/2;
+
+  oscs[i] = new OscBank(audioCtx, frequencies[i], [1,2,3,5,7], 1200);
+  oscs[i].connect(pannerNodes[i]);
+  oscs[i].gain.gain.value = 0;
+  oscs[i].start();
+}
+
+var timerID;
+var c = 0;
+let play = true;
+let lookahead = 1000;
+let decay = 0;
+var noteQueue = new Queue(6);
+noteQueue.enqueue(0);
+noteQueue.enqueue(1);
+noteQueue.enqueue(2);
+noteQueue.enqueue(3);
+noteQueue.enqueue(4);
+noteQueue.enqueue(5);
 
 
-<script>
+function notescheduler() {
+	var n = noteQueue.dequeue();
+	c = fold(drunk(c, 5),0,4);
+	//lookahead = 100.0+c*50.0;
+	lookahead = 125*Math.pow(2,c);
+	console.log(lookahead)
+	var s = Math.round(Math.random()*(nb_oscs-1));
+	var okt = Math.round(Math.random()*3)+1;
+	oscs[n].linearRampToFrequencyAtTime(okt*notes[s]/4, 0.01);
+	oscs[n].env(1., 0.05, 2.0);
+	noteQueue.enqueue(n);
+    timerID = window.setTimeout(notescheduler, lookahead);
+}
 
-var frequency = 440;
-
-var offsets = [1,2,3,5,7];
-var diss = 50;
-
-offsets.forEach( (o,i) => {
-	console.log(frequency * Math.pow(2,this.offsets[i]*diss/1200));
+document.querySelector("#butt").addEventListener("click", function() {
+	play = !play
+	if(!play)
+		notescheduler();
+	else
+        window.clearTimeout(timerID)
 });
 
 </script>

@@ -1,9 +1,10 @@
 'use strict';
 import {search} from './modules/fetch.js';
 import {colors} from './modules/colors.js';
-import {Point, quickSortPt, clip} from './modules/algs.js';
+import {Point, scale, clip, drunk, fold, Queue, sum} from './modules/algs.js';
 import {mapPointHandler, map} from './modules/map.js';
 import {OscBank, unlockAudioContext} from './modules/ljud.js';
+import {Freeverb} from './freeverb.js';
 
 function createDiv(className, innerHTML) {
   var res = document.createElement("div");
@@ -42,19 +43,26 @@ addElementHider(document.querySelector("#exit"), creditDiv);
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 unlockAudioContext(audioCtx);
 
-const nb_oscs = 8;
-const notes = [220.0, 261.6, 329.6, 392.0, 523.3, 659.3];
-const oscs = new Array(nb_oscs);
-const frequencies = new Array(nb_oscs);
-var vol = .005/nb_oscs;
-const pannerNodes = new Array(nb_oscs);
-const gainNodes = new Array(nb_oscs);
+var reverb  = Freeverb(audioCtx);
+reverb.roomSize = 0.8
+reverb.dampening = 10000
+reverb.wet.value = 0.5
+reverb.dry.value = 1.
+reverb.connect(audioCtx.destination);
+
+const nb_oscs = 6,
+    notes = [196.0, 246.9, 293.7, 493.9, 523.3, 659.3],
+    oscs = new Array(nb_oscs),
+    frequencies = new Array(nb_oscs),
+    pannerNodes = new Array(nb_oscs),
+    gainNodes = new Array(nb_oscs);
+var vol = 0.5/nb_oscs;
 
 for (let i = 0; i < nb_oscs; i++) {
 
   gainNodes[i] = audioCtx.createGain();
-  gainNodes[i].connect(audioCtx.destination);
-  gainNodes[i].gain.value = vol;
+  gainNodes[i].connect(reverb);
+  gainNodes[i].gain.value = 0;
 
   pannerNodes[i] = audioCtx.createPanner();
   pannerNodes[i].connect(gainNodes[i]);
@@ -67,6 +75,36 @@ for (let i = 0; i < nb_oscs; i++) {
   oscs[i].connect(pannerNodes[i]);
   oscs[i].start();
 }
+
+var timerID;
+var c = 0;
+let play = true;
+let lookahead = 1000;
+let decay = 0;
+var intensity = 125;
+var noteQueue = new Queue(6);
+noteQueue.enqueue(0);
+noteQueue.enqueue(1);
+noteQueue.enqueue(2);
+noteQueue.enqueue(3);
+noteQueue.enqueue(4);
+noteQueue.enqueue(5);
+
+notescheduler();
+
+function notescheduler() {
+  var n = noteQueue.dequeue();
+  c = fold(drunk(c, 5),0,4);
+  //lookahead = 100.0+c*50.0;
+  lookahead = intensity*Math.pow(2,c);
+  var s = Math.round(Math.random()*(nb_oscs-1));
+  var okt = Math.round(Math.random()*3)+1;
+  oscs[n].linearRampToFrequencyAtTime(okt*notes[s]/4, 0.01);
+  oscs[n].env(1., 0.05, 2.0);
+  noteQueue.enqueue(n);
+    timerID = window.setTimeout(notescheduler, lookahead);
+}
+
 
 var mapPointsMap = new Map();
 var mapPoints = new Array();
@@ -125,8 +163,15 @@ map.addEventListener("move", function() {
       var centerPoint = new Point(center.lat, center.lng);
       //var closest = quickSortPt(mapPoints, centerPoint).slice(0,nb_oscs+1);
       var closest = mapPoints.sort((p,u) => p[0].dist(centerPoint) - u[0].dist(centerPoint)).slice(0,nb_oscs+1);
-      console.log(closest)
 
+      var mjau = new Array();
+      for (let i = 0; i < nb_oscs; ++i) {
+        mjau[i] = closest[i][1];
+      }
+      var hej = sum(mjau)/nb_oscs;
+      intensity = scale(hej, 0, 200, 125, 25);
+
+      console.log(hej)
       if (typeof(closest) !== 'undefined' && oldCenter.dist(centerPoint) > 0.001) {
         for (let i = 0; i < nb_oscs; ++i) {
             var euc = centerPoint.dist(closest[i][0]);

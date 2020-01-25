@@ -29,7 +29,7 @@ var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ca
 var heat = L.heatLayer([],
         {
           radius: 15,
-          blur: 30,
+          blur: 15,
           max:1000,
           gradient: 
               {

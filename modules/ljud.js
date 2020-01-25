@@ -1,9 +1,10 @@
 export class OscBank {
   constructor(audioCtx, frequency, offsets, diss) {
+    this.audioCtx = audioCtx;
     this.frequency = frequency;
     this.offsets = offsets;
     this.diss = diss;
-    this.partials = this.offsets.map(() => audioCtx.createOscillator());
+    this.partials = this.offsets.map(() => new OscillatorNode(audioCtx, {type:"triangle"}));
     this.gain = audioCtx.createGain();
 
     offsets.forEach((offset,i) => {
@@ -44,6 +45,7 @@ export class OscBank {
   }
 
    linearRampToFrequencyAtTime(frequency, time = 0.) {
+    this.frequency = frequency;
     this.partials.forEach((o,i) => {
       o.frequency.linearRampToValueAtTime(2* frequency * Math.exp(this.offsets[i]/this.diss), time);
     });
@@ -54,10 +56,23 @@ export class OscBank {
     });
   }
 
+  env(gain, attack, decay) {
+    var a = this.audioCtx.currentTime+attack;
+    var d = a + decay;
+    this.gain.gain.cancelScheduledValues(0);
+    this.gain.gain.linearRampToValueAtTime(0., 0.001);
+    this.gain.gain.linearRampToValueAtTime(gain, a);
+    this.gain.gain.exponentialRampToValueAtTime(0.0001, d);
+  }
+
   printFreqs() {
     this.partials.forEach(x => console.log(x.frequency.value));
-  }
+  } 
+
 }
+
+
+
 
 export function unlockAudioContext(audioCtx) {
   if (audioCtx.state !== 'suspended') return;

@@ -27,7 +27,7 @@ body {
   width: 75%;
   height:100%;
   visibility: hidden;
-  z-index:100;
+  z-index:100000;
   overflow:scroll;
 }
 
@@ -320,6 +320,10 @@ user-select: none; /* Standard */
 
 .leaflet-control-zoom, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
   display: none;
+}
+
+.leaflet-top {
+  z-index: 10;
 }
 
 input {

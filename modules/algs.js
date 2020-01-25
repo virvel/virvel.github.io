@@ -8,15 +8,49 @@ export class Point {
 	}
 }
 
-export function quickSortPt(list, pt) {
-	if (list.length < 2) {
-		return list;
+export class Queue {
+
+	constructor(n) {
+		this.length = n;
+		this.queue = new Array();
 	}
-	let mid = pt.dist(list[Math.round(list.length/2)][0]);
-	return 	quickSortPt (list.filter(x => x[0].dist(pt) < mid), pt)
-				.concat (list.filter(x => x[0].dist(pt) == mid) )
-	.concat (quickSortPt(list.filter(x => x[0].dist(pt) > mid), pt));
+
+	enqueue(x) {
+
+		this.queue.push(x);
+		
+		if (this.queue.length > this.length) {
+			this.queue = this.queue.slice(1,this.length+1);
+		}
+	}
+
+	dequeue(x) {
+		if (this.queue.length < 1)
+		{
+			return [];
+		}
+		else {
+			var pop = this.queue[0];
+			this.queue = this.queue.slice(1);
+			return pop;
+		}
+	}
+
+	print() {
+		console.log(this.queue);
+	}
 }
+
+
+// export function quickSortPt(list, pt) {
+// 	if (list.length < 2) {
+// 		return list;
+// 	}
+// 	let mid = pt.dist(list[Math.round(list.length/2)][0]);
+// 	return 	quickSortPt (list.filter(x => x[0].dist(pt) < mid), pt)
+// 				.concat (list.filter(x => x[0].dist(pt) == mid) )
+// 	.concat (quickSortPt(list.filter(x => x[0].dist(pt) > mid), pt));
+// }
 
 export function scale(x, a1, a2, b1, b2) {
   return clip((b2-b1)*(x-a1)/(a2-a1) + b1, Math.min(b1,b2), Math.max(b1,b2));
@@ -25,3 +59,26 @@ export function scale(x, a1, a2, b1, b2) {
 export function clip(x, min, max) {
   return Math.max(Math.min(x, max),min);
 }
+
+export function fold(x, min, max) {
+	if (x > max) {
+		return max - x%max;
+	}
+	else if (x <= min) {
+		return min + (-x)%max
+	}
+	else {
+		return x;
+	}
+}
+
+export function drunk(prev, step) {
+	return prev + ((Math.round(Math.random())*2)-1)*step;
+}
+
+export var reduce = (f, xs, id) => {
+	return (xs.length < 1) ? id : f(xs[0], reduce(f, xs.slice(2), id));
+};
+
+export var sum = (xs) => {return reduce(add, xs, 0)};
+export var add = (a,b) => Number(a)+Number(b);
