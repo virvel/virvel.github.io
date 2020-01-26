@@ -44,7 +44,7 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 unlockAudioContext(audioCtx);
 
 var reverb  = Freeverb(audioCtx);
-reverb.roomSize = 0.5
+reverb.roomSize = 0.4
 reverb.dampening = 5000
 reverb.wet.value = 0.5
 reverb.dry.value = 1.
@@ -83,24 +83,20 @@ let lookahead = 1000;
 let decay = 0;
 var intensity = 125;
 var noteQueue = new Queue(6);
-noteQueue.enqueue(0);
-noteQueue.enqueue(1);
-noteQueue.enqueue(2);
-noteQueue.enqueue(3);
-noteQueue.enqueue(4);
-noteQueue.enqueue(5);
+for(let i = 0; i < nb_oscs; ++i) {
+  noteQueue.enqueue(i);
+}
 
 notescheduler();
 
 function notescheduler() {
   var n = noteQueue.dequeue();
   c = fold(drunk(c, 5),0,4);
-  //lookahead = 100.0+c*50.0;
   lookahead = intensity*Math.pow(2,c);
   var s = Math.round(Math.random()*(nb_oscs-1));
   var okt = Math.round(Math.random()*3)+1;
   oscs[n].linearRampToFrequencyAtTime(okt*notes[s]/4, 0.01);
-  oscs[n].env(1., 0.05, 2.0);
+  oscs[n].env(1., intensity/1000., intensity/10.);
   noteQueue.enqueue(n);
     timerID = window.setTimeout(notescheduler, lookahead);
 }
