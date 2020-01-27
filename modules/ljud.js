@@ -32,12 +32,6 @@ export class OscBank {
     this.partials.forEach(o => o.stop());
   }
 
-  exponentialRampToDissAtTime(diss, time = 0.) {
-    this.diss = diss;
-    this.partials.forEach((o,i) => {
-      o.frequency.exponentialRampToValueAtTime(2* this.frequency * Math.exp(this.offsets[i]/diss), time);
-    });
-  }
   linearRampToDissAtTime(diss, time = 0.) {
     this.diss = diss;
     this.partials.forEach((o,i) => {
@@ -51,11 +45,6 @@ export class OscBank {
       o.frequency.linearRampToValueAtTime(2* frequency * Math.exp(this.offsets[i]/this.diss), time);
     });
   }
-    exponentialRampToFrequencyAtTime(frequency, time = 0.) {
-    this.partials.forEach((o,i) => {
-      o.frequency.exponentialRampToValueAtTime(2* frequency * Math.exp(this.offsets[i]/this.diss), time);
-    });
-  }
 
   env(gain, attack, decay) {
     var a = this.audioCtx.currentTime+attack;
@@ -65,15 +54,7 @@ export class OscBank {
     this.gain.gain.linearRampToValueAtTime(gain, a);
     this.gain.gain.exponentialRampToValueAtTime(0.0001, d);
   }
-
-  printFreqs() {
-    this.partials.forEach(x => console.log(x.frequency.value));
-  } 
-
 }
-
-
-
 
 export function unlockAudioContext(audioCtx) {
   if (audioCtx.state !== 'suspended') return;
