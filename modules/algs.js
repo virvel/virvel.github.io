@@ -3,7 +3,9 @@ export class Point {
 		this.x = x;
 		this.y = y;
 	}
-	dist = (b) => Math.pow(this.x - b.x, 2) + Math.pow(this.y - b.y, 2);
+	dist(b) {
+		return Math.pow(this.x - b.x, 2) + Math.pow(this.y - b.y, 2);
+	}
 }
 
 export class Queue {
