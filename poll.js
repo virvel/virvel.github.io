@@ -94,7 +94,7 @@ function notescheduler() {
   var okt = Math.round(Math.random()*3)+1;
   oscs[n].linearRampToFrequencyAtTime(okt*notes[s]/4, 0.01);
   var dec = scale(intensity, 125, 25, 5., 1.5);
-  oscs[n].env(1., 0.05, dec);
+  oscs[n].env(1., dec/100., dec);
   noteQueue.enqueue(n);
     timerID = window.setTimeout(notescheduler, lookahead);
 }
