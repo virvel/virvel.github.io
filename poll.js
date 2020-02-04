@@ -42,9 +42,9 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 unlockAudioContext(audioCtx);
 
 var reverb  = Freeverb(audioCtx);
-reverb.roomSize = 0.4
+reverb.roomSize = 0.5
 reverb.dampening = 5000
-reverb.wet.value = 0.5
+reverb.wet.value = 0.3
 reverb.dry.value = 1.
 reverb.connect(audioCtx.destination);
 
@@ -87,16 +87,17 @@ for(let i = 0; i < nb_oscs; ++i) {
 notescheduler();
 
 function notescheduler() {
-  var n = noteQueue.dequeue();
+  var n = noteQueue.dequeue(),
+      s = Math.round(Math.random()*(nb_oscs-1)),
+      okt = Math.round(Math.random()*3)+1,
+      dec = scale(intensity, 125, 25, 5., 1.5);
+
   c = fold(drunk(c, 5),0,4);
   lookahead = intensity*Math.pow(2,c);
-  var s = Math.round(Math.random()*(nb_oscs-1));
-  var okt = Math.round(Math.random()*3)+1;
   oscs[n].linearRampToFrequencyAtTime(okt*notes[s]/4, 0.01);
-  var dec = scale(intensity, 125, 25, 5., 1.5);
   oscs[n].env(1., dec/100., dec);
   noteQueue.enqueue(n);
-    timerID = window.setTimeout(notescheduler, lookahead);
+  timerID = window.setTimeout(notescheduler, lookahead);
 }
 
 
@@ -159,8 +160,7 @@ map.addEventListener("move", function() {
   for (let i = 0; i < nb_oscs; ++i) {
     mjau[i] = closest[i][1];
   }
-  var hej = sum(mjau)/nb_oscs;
-  intensity = scale(hej, 0, 200, 125, 25);
+  intensity = scale(sum(mjau)/nb_oscs, 0, 200, 125, 25);
 
   if (typeof(closest) !== 'undefined' && oldCenter.dist(centerPoint) > 0.01) {
     for (let i = 0; i < nb_oscs; ++i) {

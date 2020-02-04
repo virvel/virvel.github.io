@@ -167,6 +167,7 @@ body {
   font-family: 'Inria Serif', sans-serif;
   background-color: rgb(50,150,50);
   position: absolute;
+  padding: 0;
   top: 0px;
   left: 0px;
   width: 100%;
@@ -174,8 +175,6 @@ body {
   overflow-y: scroll;
   overflow-x: hidden;
   text-align: center;
-  vertical-align: middle;
-  padding: 0;
   margin: 0;
   z-index: 9000;
   -webkit-animation: pulsate 100s linear infinite;
@@ -269,6 +268,7 @@ body {
   text-align: left;
 }
 
+
 #creditDiv #exit {
   position: absolute;
   font-size: 60pt;
@@ -281,6 +281,10 @@ body {
 }
 
 
+}
+
+#creditDiv img {
+  margin-right: 30px;
 }
 
 #cross {
@@ -332,4 +336,16 @@ input {
 
 .search-tooltip {
   font-size: 16px;
+}
+
+.leaflet-control-attribution {
+  visibility: hidden;
+}
+
+.attribution {
+  font-size: 16pt !important;
+}
+
+#ps {
+  padding: 30px 0 30px 0;
 }
