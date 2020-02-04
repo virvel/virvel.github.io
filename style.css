@@ -272,6 +272,7 @@ body {
   padding: 40px 10% 10px 10%;
   display: block;
   text-align: left;
+  }
 }
 
 @media all and (max-width: 800px) {
@@ -298,14 +299,21 @@ body {
   }
 
   #creditDiv p {
-  font-family: 'Inria Serif', serif;
-  line-height: 1.15em;
-  font-size: 12pt;
-  padding: 40px 10% 10px 10%;
-  display: block;
-  text-align: left;
-}
+    font-family: 'Inria Serif', serif;
+    line-height: 1.15em;
+    font-size: 12pt;
+    padding: 40px 10% 10px 10%;
+    display: block;
+    text-align: left;
+  }
 
+  #creditDiv img {
+  margin-right: 30px;
+  margin-bottom: 30px;
+  max-width: 150px;
+  }
+
+}
 
 
 
@@ -321,12 +329,11 @@ body {
 }
 
 
-}
 
 #creditDiv img {
   margin-right: 30px;
   margin-bottom: 30px;
-  max-width: 80%;
+  max-width: 200px;
 }
 
 #cross {
